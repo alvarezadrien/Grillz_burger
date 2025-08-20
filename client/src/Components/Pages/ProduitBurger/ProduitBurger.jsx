@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./ProduitBurger.css";
-import BurgerImg from "../../../assets/images/Classic_grillz.png";
-import cheeseImg from "../../../assets/images/fromages.jpg";
-import baconImg from "../../../assets/images/bacon.jpg";
-import onionRingsImg from "../../../assets/images/onion_rings.jpg";
-import extraSauceImg from "../../../assets/images/extra_sauce.jpg";
-import friesImg from "../../../assets/images/frites.jpg";
-import drinkImg from "../../../assets/images/drinks.jpg";
-import onionImg from "../../../assets/images/onion.jpg";
-import cornichonsImg from "../../../assets/images/cornichons.jpg";
-import tomateImg from "../../../assets/images/tomates.jpg";
-import extraBurgerImg from "../../../assets/images/extra_burger.jpg";
-import saladeImg from "../../../assets/images/salade.jpg";
 
 const ProduitBurger = () => {
   const location = useLocation();
@@ -37,7 +25,7 @@ const ProduitBurger = () => {
 
   const basePrice = 9.99;
   const promoDiscount = 0.25;
-  const extrasPerPage = 6; // 2 lignes de 3
+  const extrasPerPage = 6;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -93,25 +81,70 @@ const ProduitBurger = () => {
   };
 
   const extrasData = [
-    { name: "cheese", label: "Fromage", img: cheeseImg, price: 1.5 },
-    { name: "bacon", label: "Bacon", img: baconImg, price: 2 },
+    {
+      name: "cheese",
+      label: "Fromage",
+      img: "https://images.unsplash.com/photo-1604152135912-04a3889f95c9",
+      price: 1.5,
+    },
+    {
+      name: "bacon",
+      label: "Bacon",
+      img: "https://images.unsplash.com/photo-1606755962773-1ec2f74a7f9f",
+      price: 2,
+    },
     {
       name: "onionRings",
       label: "Onion Rings",
-      img: onionRingsImg,
+      img: "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f",
       price: 1.2,
     },
-    { name: "extraSauce", label: "Sauce", img: extraSauceImg, price: 0.8 },
-    { name: "fries", label: "Frites", img: friesImg, price: 3 },
-    { name: "drink", label: "Boisson", img: drinkImg, price: 2.5 },
-    { name: "salade", label: "Salade", img: saladeImg, price: 1 },
-    { name: "onion", label: "Oignons", img: onionImg, price: 0.7 },
-    { name: "cornichons", label: "Cornichons", img: cornichonsImg, price: 0.7 },
-    { name: "tomate", label: "Tomates", img: tomateImg, price: 0.8 },
+    {
+      name: "extraSauce",
+      label: "Sauce",
+      img: "https://images.unsplash.com/photo-1604909053158-ff2d3b8f88c6",
+      price: 0.8,
+    },
+    {
+      name: "fries",
+      label: "Frites",
+      img: "https://images.unsplash.com/photo-1550547660-d9450f859349",
+      price: 3,
+    },
+    {
+      name: "drink",
+      label: "Boisson",
+      img: "https://images.unsplash.com/photo-1571071630218-4c3a74b31c32",
+      price: 2.5,
+    },
+    {
+      name: "salade",
+      label: "Salade",
+      img: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
+      price: 1,
+    },
+    {
+      name: "onion",
+      label: "Oignons",
+      img: "https://images.unsplash.com/photo-1603052875303-94f4210a5e8f",
+      price: 0.7,
+    },
+    {
+      name: "cornichons",
+      label: "Cornichons",
+      img: "https://images.unsplash.com/photo-1625940918780-53a6c0e66980",
+      price: 0.7,
+    },
+    {
+      name: "tomate",
+      label: "Tomates",
+      img: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
+      price: 0.8,
+    },
     {
       name: "extraBurger",
       label: "Extra Burger",
-      img: extraBurgerImg,
+      img: "https://images.unsplash.com/photo-1550547660-d9450f859349",
       price: 3,
     },
   ];
@@ -123,7 +156,7 @@ const ProduitBurger = () => {
     setTimeout(() => {
       setPage(newPage);
       setIsAnimating(false);
-    }, 300); // Durée de l'animation CSS
+    }, 300);
   };
 
   const displayedExtras = extrasData.slice(
@@ -135,7 +168,10 @@ const ProduitBurger = () => {
     <div className="produit-container">
       <div className="produit-main">
         <div className="produit-img">
-          <img src={BurgerImg} alt="Classic Grillz Burger" />
+          <img
+            src="https://images.unsplash.com/photo-1550547660-d9450f859349"
+            alt="Classic Grillz Burger"
+          />
           {isPromoActive && <div className="badge-promo">-25% Promo !</div>}
         </div>
 

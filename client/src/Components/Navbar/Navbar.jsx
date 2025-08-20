@@ -7,7 +7,6 @@ import "./Navbar.css";
 const Navbar = () => {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
-  const [cartQuantity, setCartQuantity] = useState(3); // fausses données
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
 
   const toggleSidebar = () => setIsBurgerOpen((prev) => !prev);
@@ -59,9 +58,6 @@ const Navbar = () => {
         {/* Panier */}
         <Link to="/panier" className="icon cart-icon" title="Panier">
           <FaShoppingCart size={22} color="#fff" />
-          {cartQuantity > 0 && (
-            <span className="cart-badge">{cartQuantity}</span>
-          )}
         </Link>
 
         {/* Burger menu */}

@@ -10,9 +10,7 @@ const Navbar = () => {
   const [cartQuantity, setCartQuantity] = useState(3); // fausses données
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsBurgerOpen((prev) => !prev);
-  };
+  const toggleSidebar = () => setIsBurgerOpen((prev) => !prev);
 
   useEffect(() => {
     const sidebar = document.getElementById("sidebar");

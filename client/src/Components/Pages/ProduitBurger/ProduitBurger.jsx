@@ -1,7 +1,19 @@
+// src/components/Produit/ProduitBurger.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./ProduitBurger.css";
 import BurgerImg from "../../../assets/images/Classic_grillz.png";
+import cheeseImg from "../../../assets/images/fromages.jpg";
+import baconImg from "../../../assets/images/bacon.jpg";
+import onionRingsImg from "../../../assets/images/onion_rings.jpg";
+import extraSauceImg from "../../../assets/images/extra_sauce.jpg";
+import friesImg from "../../../assets/images/frites.jpg";
+import drinkImg from "../../../assets/images/drinks.jpg";
+import onionImg from "../../../assets/images/onion.jpg";
+import cornichonsImg from "../../../assets/images/cornichons.jpg";
+import tomateImg from "../../../assets/images/tomates.jpg";
+import extraBurgerImg from "../../../assets/images/extra_burger.jpg";
+import saladeImg from "../../../assets/images/salade.jpg";
 
 const ProduitBurger = () => {
   const location = useLocation();
@@ -13,12 +25,19 @@ const ProduitBurger = () => {
     extraSauce: false,
     fries: false,
     drink: false,
+    salade: false,
+    onion: false,
+    cornichons: false,
+    tomate: false,
+    extraBurger: false,
   });
   const [drinkChoice, setDrinkChoice] = useState("Coca-Cola");
+  const [isPromoActive, setIsPromoActive] = useState(false);
+  const [page, setPage] = useState(0);
 
   const basePrice = 9.99;
-  const promoDiscount = 0.25; // 25%
-  const [isPromoActive, setIsPromoActive] = useState(false);
+  const promoDiscount = 0.25;
+  const extrasPerPage = 6; // 2 lignes de 3
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -27,15 +46,13 @@ const ProduitBurger = () => {
       const hour = now.getHours();
       if (hour >= 11 && hour < 14) {
         setIsPromoActive(true);
-        // Cocher automatiquement frites et boisson pendant promo
         setExtras((prev) => ({ ...prev, fries: true, drink: true }));
       }
     }
   }, [location.search]);
 
-  const handleExtraChange = (e) => {
-    const { name, checked } = e.target;
-    setExtras((prev) => ({ ...prev, [name]: checked }));
+  const handleExtraChange = (name) => {
+    setExtras((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
   const handleQuantityChange = (type) => {
@@ -49,16 +66,17 @@ const ProduitBurger = () => {
     if (extras.bacon) extrasPrice += 2;
     if (extras.onionRings) extrasPrice += 1.2;
     if (extras.extraSauce) extrasPrice += 0.8;
-
-    // Frites et boisson offertes pendant la promo
+    if (extras.salade) extrasPrice += 1;
+    if (extras.onion) extrasPrice += 0.7;
+    if (extras.cornichons) extrasPrice += 0.7;
+    if (extras.tomate) extrasPrice += 0.8;
+    if (extras.extraBurger) extrasPrice += 3;
     if (!isPromoActive) {
       if (extras.fries) extrasPrice += 3;
       if (extras.drink) extrasPrice += 2.5;
     }
-
     let price = (basePrice + extrasPrice) * quantity;
     if (isPromoActive) price *= 1 - promoDiscount;
-
     return price.toFixed(2);
   };
 
@@ -74,11 +92,96 @@ const ProduitBurger = () => {
     alert("Produit ajouté au panier !");
   };
 
+  const extrasData = [
+    { name: "cheese", label: "Fromage", img: cheeseImg, price: 1.5 },
+    { name: "bacon", label: "Bacon", img: baconImg, price: 2 },
+    {
+      name: "onionRings",
+      label: "Onion Rings",
+      img: onionRingsImg,
+      price: 1.2,
+    },
+    { name: "extraSauce", label: "Sauce", img: extraSauceImg, price: 0.8 },
+    { name: "fries", label: "Frites", img: friesImg, price: 3 },
+    { name: "drink", label: "Boisson", img: drinkImg, price: 2.5 },
+    { name: "salade", label: "Salade", img: saladeImg, price: 1 },
+    { name: "onion", label: "Oignons", img: onionImg, price: 0.7 },
+    { name: "cornichons", label: "Cornichons", img: cornichonsImg, price: 0.7 },
+    { name: "tomate", label: "Tomates", img: tomateImg, price: 0.8 },
+    {
+      name: "extraBurger",
+      label: "Extra Burger",
+      img: extraBurgerImg,
+      price: 3,
+    },
+  ];
+
+  const totalPages = Math.ceil(extrasData.length / extrasPerPage);
+
+  const displayedExtras = extrasData.slice(
+    page * extrasPerPage,
+    page * extrasPerPage + extrasPerPage
+  );
+
+  const nextPage = () => {
+    setPage((prev) => (prev + 1 < totalPages ? prev + 1 : 0));
+  };
+
+  const prevPage = () => {
+    setPage((prev) => (prev - 1 >= 0 ? prev - 1 : totalPages - 1));
+  };
+
   return (
     <div className="produit-container">
-      <div className="produit-img">
-        <img src={BurgerImg} alt="Classic Grillz Burger" />
-        {isPromoActive && <div className="badge-promo">-25% Promo !</div>}
+      <div className="produit-main">
+        <div className="produit-img">
+          <img src={BurgerImg} alt="Classic Grillz Burger" />
+          {isPromoActive && <div className="badge-promo">-25% Promo !</div>}
+        </div>
+
+        <div className="extras-carousel-container">
+          {totalPages > 1 && (
+            <button className="carousel-btn left" onClick={prevPage}>
+              &lt;
+            </button>
+          )}
+
+          <div className="extras-carousel">
+            {displayedExtras.map(({ name, label, img, price }) => (
+              <div
+                key={name}
+                className={`extra-item ${extras[name] ? "active" : ""}`}
+                onClick={() => handleExtraChange(name)}
+              >
+                <div
+                  className="extra-img"
+                  style={{ backgroundImage: `url(${img})` }}
+                />
+                <span>{label}</span>
+                <small>+${price.toFixed(2)}</small>
+              </div>
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <button className="carousel-btn right" onClick={nextPage}>
+              &gt;
+            </button>
+          )}
+        </div>
+
+        {extras.drink && (
+          <select
+            value={drinkChoice}
+            onChange={(e) => setDrinkChoice(e.target.value)}
+          >
+            <option value="Coca-Cola">Coca-Cola</option>
+            <option value="Pepsi">Pepsi</option>
+            <option value="Fanta">Fanta</option>
+            <option value="Sprite">Sprite</option>
+            <option value="Eau">Eau</option>
+          </select>
+        )}
       </div>
 
       <div className="produit-details">
@@ -103,7 +206,7 @@ const ProduitBurger = () => {
 
         <div className="quantity">
           <label>Quantité :</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="quantity-controls">
             <button onClick={() => handleQuantityChange("minus")}>-</button>
             <input
               type="number"
@@ -117,78 +220,6 @@ const ProduitBurger = () => {
             />
             <button onClick={() => handleQuantityChange("plus")}>+</button>
           </div>
-        </div>
-
-        <div className="extras">
-          <h3>Extras :</h3>
-          <label>
-            <input
-              type="checkbox"
-              name="cheese"
-              checked={extras.cheese}
-              onChange={handleExtraChange}
-            />
-            Fromage (+$1.50)
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="bacon"
-              checked={extras.bacon}
-              onChange={handleExtraChange}
-            />
-            Bacon (+$2.00)
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="onionRings"
-              checked={extras.onionRings}
-              onChange={handleExtraChange}
-            />
-            Onion Rings (+$1.20)
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="extraSauce"
-              checked={extras.extraSauce}
-              onChange={handleExtraChange}
-            />
-            Sauce supplémentaire (+$0.80)
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="fries"
-              checked={extras.fries}
-              onChange={handleExtraChange}
-            />
-            Frites {isPromoActive ? "(offertes)" : "(+$3.00)"}
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="drink"
-              checked={extras.drink}
-              onChange={handleExtraChange}
-            />
-            Boisson {isPromoActive ? "(offerte)" : "(choix +$2.50)"}
-          </label>
-
-          {extras.drink && (
-            <select
-              value={drinkChoice}
-              onChange={(e) => setDrinkChoice(e.target.value)}
-              style={{ marginTop: "4px" }}
-            >
-              <option value="Coca-Cola">Coca-Cola</option>
-              <option value="Pepsi">Pepsi</option>
-              <option value="Fanta">Fanta</option>
-              <option value="Sprite">Sprite</option>
-              <option value="Eau">Eau</option>
-            </select>
-          )}
         </div>
 
         <div className="total">

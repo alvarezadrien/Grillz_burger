@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap");
-
 .sidebar {
   width: 260px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.25));
@@ -21,6 +19,7 @@
 .menu {
   list-style: none;
   margin-top: 5rem;
+  padding-left: 0;
 }
 .menu-item {
   padding: 1rem 2rem;
@@ -46,7 +45,7 @@
   border-radius: 6px;
 }
 
-/* ====== TOP BAR ICONS ====== */
+/* Top bar icons */
 .top-icons {
   position: fixed;
   top: 1.25rem;
@@ -56,8 +55,8 @@
   z-index: 33;
 }
 .top-icons .icon {
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   border-radius: 12px;
   display: grid;
   place-items: center;
@@ -74,14 +73,13 @@
   background: rgba(255, 255, 255, 0.09);
 }
 
-/* ====== BURGER ICON ====== */
+/* Burger icon */
 .burger-icon {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 28px;
   height: 22px;
-  padding: 4px 0;
 }
 .burger-icon span {
   display: block;
@@ -103,6 +101,7 @@
   transform: rotate(-45deg) translateY(-9px);
 }
 
+/* Overlay */
 .overlay {
   position: fixed;
   inset: 0;
@@ -112,4 +111,20 @@
 }
 .overlay.show {
   display: block;
+}
+
+/* badge panier */
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #9acd32;
+  color: #1a1a1a;
+  font-weight: 700;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+.top-icons .icon {
+  position: relative; /* nécessaire pour le badge */
 }

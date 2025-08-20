@@ -1,30 +1,31 @@
+// src/components/Navbar/Navbar.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { FaShoppingCart } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar = () => {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
+  const [cartQuantity, setCartQuantity] = useState(3); // fausses données
+  const [isBurgerOpen, setIsBurgerOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsBurgerOpen((prev) => !prev);
+  };
 
   useEffect(() => {
-    const burgerIcon = document.getElementById("burger-menu-icon");
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
 
-    const toggleSidebar = () => {
-      sidebar.classList.toggle("show");
-      overlay.classList.toggle("show");
-    };
-
-    burgerIcon.addEventListener("click", toggleSidebar);
-    overlay.addEventListener("click", toggleSidebar);
-
-    // Cleanup
-    return () => {
-      burgerIcon.removeEventListener("click", toggleSidebar);
-      overlay.removeEventListener("click", toggleSidebar);
-    };
-  }, []);
+    if (isBurgerOpen) {
+      sidebar.classList.add("show");
+      overlay.classList.add("show");
+    } else {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    }
+  }, [isBurgerOpen]);
 
   const menuItems = [
     { label: "BURGERS", path: "/" },
@@ -38,7 +39,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="overlay" id="overlay"></div>
+      <div className="overlay" id="overlay" onClick={toggleSidebar}></div>
 
       <aside className="sidebar" id="sidebar">
         <ul className="menu">
@@ -57,11 +58,21 @@ const Navbar = () => {
       </aside>
 
       <div className="top-icons">
-        <div className="icon" title="Rechercher">
-          <i className="fas fa-search"></i>
-        </div>
-        <div className="icon" id="burger-menu-icon" title="Menu">
-          <i className="fas fa-bars"></i>
+        {/* Panier */}
+        <Link to="/panier" className="icon cart-icon" title="Panier">
+          <FaShoppingCart size={22} color="#fff" />
+          {cartQuantity > 0 && (
+            <span className="cart-badge">{cartQuantity}</span>
+          )}
+        </Link>
+
+        {/* Burger menu */}
+        <div className="icon" onClick={toggleSidebar} title="Menu">
+          <div className={`burger-icon ${isBurgerOpen ? "open" : ""}`}>
+            <span className="burger-bar top"></span>
+            <span className="burger-bar middle"></span>
+            <span className="burger-bar bottom"></span>
+          </div>
         </div>
       </div>
     </>

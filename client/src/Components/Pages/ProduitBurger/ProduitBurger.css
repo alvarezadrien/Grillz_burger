@@ -1,0 +1,145 @@
+.produit-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  background: #0f0f0f;
+}
+
+.produit-img {
+  flex: 1 1 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.produit-img img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(154, 205, 50, 0.3);
+}
+
+.badge-promo {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--lime-green);
+  color: #101010;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.produit-details {
+  flex: 1 1 300px;
+}
+
+.produit-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--lime-green);
+}
+
+.produit-desc {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.produit-price {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.produit-price .old-price {
+  text-decoration: line-through;
+  color: #aaa;
+  margin-right: 12px;
+}
+
+.produit-price .promo-price {
+  color: var(--lime-green);
+  font-weight: 700;
+}
+
+.quantity {
+  margin-bottom: 1rem;
+}
+
+.quantity input {
+  width: 60px;
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #151515;
+  color: #fff;
+  text-align: center;
+}
+
+.quantity button {
+  background: var(--lime-green);
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.quantity button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(154, 205, 50, 0.4);
+}
+
+.extras {
+  margin-bottom: 1.5rem;
+}
+
+.extras h3 {
+  margin-bottom: 0.5rem;
+}
+
+.extras label {
+  display: block;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.extras input {
+  margin-right: 0.5rem;
+}
+
+.extras select {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #151515;
+  color: #fff;
+}
+
+.total {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--lime-green);
+}
+
+.btn-add {
+  padding: 0.8rem 1.5rem;
+  background: var(--lime-green);
+  color: #0f0f0f;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(154, 205, 50, 0.3);
+}

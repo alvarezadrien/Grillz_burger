@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap");
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.25));
+  backdrop-filter: blur(10px);
+  padding: 2rem 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transform: translateX(-100%);
+  transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 20;
+}
+.sidebar.show {
+  transform: translateX(0);
+}
+
+.menu {
+  list-style: none;
+  margin-top: 5rem;
+}
+.menu-item {
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.menu-item a {
+  color: var(--muted);
+  text-decoration: none;
+  display: block;
+}
+.menu-item:hover a {
+  color: var(--text-color);
+  transform: translateX(3px);
+}
+.menu-item.active a {
+  color: var(--dark-bg);
+  font-weight: 700;
+  background: var(--lime-green);
+  padding: 0.8rem 1.8rem;
+  border-radius: 6px;
+}
+
+/* ====== TOP BAR ICONS ====== */
+.top-icons {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  gap: 0.8rem;
+  z-index: 33;
+}
+.top-icons .icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 1.1rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.top-icons .icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(154, 205, 50, 0.25);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* ====== BURGER ICON ====== */
+.burger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  padding: 4px 0;
+}
+.burger-icon span {
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: var(--text-color);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animation toggle */
+.burger-icon.open .burger-top {
+  transform: rotate(45deg) translateY(9px);
+}
+.burger-icon.open .burger-middle {
+  opacity: 0;
+}
+.burger-icon.open .burger-bottom {
+  transform: rotate(-45deg) translateY(-9px);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  z-index: 15;
+}
+.overlay.show {
+  display: block;
+}

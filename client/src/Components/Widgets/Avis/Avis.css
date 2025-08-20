@@ -1,0 +1,70 @@
+/* components/Avis.css */
+
+.testimonials {
+  margin-top: 1.5rem;
+}
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.track {
+  display: flex;
+  gap: 18px;
+  padding: 18px;
+  animation: slide 22s linear infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.card {
+  min-width: 320px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.stars {
+  color: var(--lime-green);
+  margin-bottom: 6px;
+}
+
+.author {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.carousel:hover .track {
+  animation-play-state: paused;
+}
+
+/* ====== RÉVÉLATION AU SCROLL ====== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accessibilité motion */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}

@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap");
+
+:root {
+  --dark-bg: #0f0f0f;
+  --panel: #151515;
+  --lime-green: #9acd32;
+  --lime-glow: #c6ff5f;
+  --text-color: #fff;
+  --muted: #b6b6b6;
+  --glass: rgba(255, 255, 255, 0.06);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+  scroll-behavior: smooth;
+}
+
+/* ====== LAYOUT PRINCIPAL ====== */
+.container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ====== RÉVÉLATION AU SCROLL ====== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accessibilité motion */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+  .top-icons .icon,
+  .btn,
+  .product-card,
+  .hero-image {
+    transition: none;
+  }
+}

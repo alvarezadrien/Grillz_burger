@@ -93,7 +93,7 @@ const Dessert = () => {
         <div className="hero-overlay" aria-hidden="true"></div>
 
         <main className="main-content">
-          <h1 className="header-text">Nos Desserts</h1>
+          <h1 className="titre_page">Nos Desserts</h1>
 
           <section className="hero-section">
             <div className="hero-img-container">

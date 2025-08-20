@@ -102,7 +102,7 @@ const Home = () => {
         <div className="hero-overlay" aria-hidden="true"></div>
 
         <main className="main-content">
-          <h1 className="header-text">
+          <h1 className="titre_page">
             Grillz
             <br />
             Burger

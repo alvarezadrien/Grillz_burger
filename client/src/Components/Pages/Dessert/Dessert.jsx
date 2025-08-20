@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dessert.css";
 
-// Import des images
 import ChocolateCakeImg from "../../../assets/images/chocolate_cake.png";
 import IceCreamImg from "../../../assets/images/glace_coup.png";
 import TiramisuImg from "../../../assets/images/tiramisu.png";
+import heroDessert from "../../../assets/images/hero_dessert.png"; // Hero image
 
 const dessertsData = [
   {
@@ -45,20 +45,15 @@ const Dessert = () => {
   );
 
   useEffect(() => {
-    // Animation fade-in au scroll
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) entry.target.classList.add("show");
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.12 }
     );
-
-    const elements = document.querySelectorAll(".product-card");
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
   }, []);
 
   const handleQuantityChange = (id, type) => {
@@ -91,20 +86,33 @@ const Dessert = () => {
   };
 
   return (
-    <div className="dessert-page">
-      <div className="hero-wrap">
-        <div className="hero-bg"></div>
-        <div className="hero-overlay"></div>
-        <div className="main-content">
-          <h1 className="header-text">Nos Desserts</h1>
-          <p className="hero-text">
-            Découvrez nos douceurs sucrées, parfaites pour terminer votre repas
-            !
-          </p>
-        </div>
-      </div>
+    <>
+      {/* ====== HERO ====== */}
+      <header className="hero-wrap" id="dessert-hero">
+        <div className="hero-bg" aria-hidden="true"></div>
+        <div className="hero-overlay" aria-hidden="true"></div>
 
-      <section>
+        <main className="main-content">
+          <h1 className="header-text">Nos Desserts</h1>
+
+          <section className="hero-section">
+            <div className="hero-img-container">
+              <img
+                src={heroDessert}
+                alt="Desserts gourmands"
+                className="hero-image"
+              />
+            </div>
+            <p className="hero-text reveal">
+              Découvrez nos douceurs sucrées, parfaites pour terminer votre
+              repas !
+            </p>
+          </section>
+        </main>
+      </header>
+
+      {/* ====== LISTE DES DESSERTS ====== */}
+      <section id="desserts" className="reveal section">
         <h2 className="section-title">Sélection du jour</h2>
         <p className="section-subtitle">
           Des desserts délicieux et gourmands pour tous les goûts.
@@ -112,37 +120,30 @@ const Dessert = () => {
 
         <div className="products-grid">
           {dessertsData.map((dessert) => (
-            <div className="product-card" key={dessert.id}>
-              {dessert.promo && <div className="promo-tag">-25% Promo</div>}
+            <article className="product-card" key={dessert.id}>
+              {dessert.promo && <div className="dessert-badge">-25% Promo</div>}
               <img
+                className="product-img"
                 src={dessert.img}
                 alt={dessert.name}
-                className="product-img"
               />
-              <h3 className="product-title">{dessert.name}</h3>
-              <p className="product-desc">{dessert.desc}</p>
-
-              <div className="quantity">
-                <label>Quantité :</label>
-                <div className="qty-controls">
-                  <button
-                    onClick={() => handleQuantityChange(dessert.id, "minus")}
-                  >
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    value={quantityMap[dessert.id]}
-                    readOnly
-                  />
-                  <button
-                    onClick={() => handleQuantityChange(dessert.id, "plus")}
-                  >
-                    +
-                  </button>
-                </div>
+              <div className="product-header">
+                <h3 className="product-title">{dessert.name}</h3>
               </div>
-
+              <p className="product-desc">{dessert.desc}</p>
+              <div className="quantity">
+                <button
+                  onClick={() => handleQuantityChange(dessert.id, "minus")}
+                >
+                  -
+                </button>
+                <input type="number" value={quantityMap[dessert.id]} readOnly />
+                <button
+                  onClick={() => handleQuantityChange(dessert.id, "plus")}
+                >
+                  +
+                </button>
+              </div>
               <p className="product-price">
                 {dessert.promo ? (
                   <>
@@ -157,7 +158,6 @@ const Dessert = () => {
                   <span>${calculatePrice(dessert)}</span>
                 )}
               </p>
-
               <div className="product-buttons">
                 <button
                   className="btn-add"
@@ -169,11 +169,11 @@ const Dessert = () => {
                   Voir
                 </button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </section>
-    </div>
+    </>
   );
 };
 

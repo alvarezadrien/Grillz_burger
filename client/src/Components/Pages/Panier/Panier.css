@@ -1,0 +1,88 @@
+/* src/pages/Panier.css */
+.panier-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 15px;
+}
+
+.panier-container h1 {
+  color: #9acd32;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.panier-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.panier-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.item-info h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #9acd32;
+}
+
+.item-info p {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-quantity button {
+  background: #9acd32;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.item-price {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #9acd32;
+}
+
+.remove-btn {
+  background: #ff4d4d;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.panier-total {
+  margin-top: 2rem;
+  text-align: right;
+}
+
+.btn-checkout {
+  background: #9acd32;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-size: 1rem;
+}

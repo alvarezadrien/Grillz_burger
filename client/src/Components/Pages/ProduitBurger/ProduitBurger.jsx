@@ -1,4 +1,3 @@
-// src/components/Produit/ProduitBurger.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./ProduitBurger.css";
@@ -34,6 +33,7 @@ const ProduitBurger = () => {
   const [drinkChoice, setDrinkChoice] = useState("Coca-Cola");
   const [isPromoActive, setIsPromoActive] = useState(false);
   const [page, setPage] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const basePrice = 9.99;
   const promoDiscount = 0.25;
@@ -118,18 +118,18 @@ const ProduitBurger = () => {
 
   const totalPages = Math.ceil(extrasData.length / extrasPerPage);
 
+  const setPageWithAnimation = (newPage) => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setPage(newPage);
+      setIsAnimating(false);
+    }, 300); // Durée de l'animation CSS
+  };
+
   const displayedExtras = extrasData.slice(
     page * extrasPerPage,
     page * extrasPerPage + extrasPerPage
   );
-
-  const nextPage = () => {
-    setPage((prev) => (prev + 1 < totalPages ? prev + 1 : 0));
-  };
-
-  const prevPage = () => {
-    setPage((prev) => (prev - 1 >= 0 ? prev - 1 : totalPages - 1));
-  };
 
   return (
     <div className="produit-container">
@@ -140,13 +140,7 @@ const ProduitBurger = () => {
         </div>
 
         <div className="extras-carousel-container">
-          {totalPages > 1 && (
-            <button className="carousel-btn left" onClick={prevPage}>
-              &lt;
-            </button>
-          )}
-
-          <div className="extras-carousel">
+          <div className={`extras-carousel ${isAnimating ? "fade-out" : ""}`}>
             {displayedExtras.map(({ name, label, img, price }) => (
               <div
                 key={name}
@@ -157,17 +151,22 @@ const ProduitBurger = () => {
                   className="extra-img"
                   style={{ backgroundImage: `url(${img})` }}
                 />
-                <span>{label}</span>
-                <small>+${price.toFixed(2)}</small>
+                <div className="extra-info">
+                  <span>{label}</span>
+                  <small>+${price.toFixed(2)}</small>
+                </div>
               </div>
             ))}
           </div>
-
-          {totalPages > 1 && (
-            <button className="carousel-btn right" onClick={nextPage}>
-              &gt;
-            </button>
-          )}
+          <div className="pagination-dots">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <span
+                key={index}
+                className={`dot ${page === index ? "active" : ""}`}
+                onClick={() => setPageWithAnimation(index)}
+              ></span>
+            ))}
+          </div>
         </div>
 
         {extras.drink && (

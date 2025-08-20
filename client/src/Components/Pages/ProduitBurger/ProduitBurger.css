@@ -1,4 +1,3 @@
-/* src/components/Produit/ProduitBurger.css */
 .produit-container {
   display: flex;
   flex-direction: column;
@@ -57,8 +56,10 @@
   max-width: 650px;
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .extras-carousel {
@@ -66,6 +67,11 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 15px;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.extras-carousel.fade-out {
+  opacity: 0;
 }
 
 .extra-item {
@@ -80,18 +86,19 @@
   height: 12rem;
   width: 140px;
   border: 2px solid #555;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .extra-item:hover {
   transform: translateY(-5px);
+  border-color: #9acd32;
 }
 
-.extra-item span,
-.extra-item small {
-  position: relative;
-  z-index: 2;
-  text-align: center;
+.extra-item.active {
+  border-color: #9acd32;
+  box-shadow: 0 0 10px #9acd32;
 }
 
 .extra-img {
@@ -101,38 +108,57 @@
   background-position: center;
   transition: all 0.3s ease;
   filter: grayscale(100%) brightness(50%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .extra-item.active .extra-img {
   filter: none !important;
 }
 
-.carousel-btn {
-  background: #9acd32;
-  color: #1a1a1a;
-  border: none;
-  padding: 0.5rem 0.8rem;
-  cursor: pointer;
+.extra-info {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  padding: 5px;
+  width: 100%;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.extra-item:hover .extra-info {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.extra-item span,
+.extra-item small {
+  display: block;
+}
+
+.pagination-dots {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #555;
   border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: bold;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.carousel-btn:hover {
-  transform: translateY(-50%) scale(1.1);
-}
-
-.carousel-btn.left {
-  left: -25px;
-}
-
-.carousel-btn.right {
-  right: -25px;
+.dot.active {
+  background-color: #9acd32;
+  transform: scale(1.2);
 }
 
 select {
@@ -271,9 +297,5 @@ select {
   .extra-item {
     width: 140px;
     height: 10rem;
-  }
-
-  .carousel-btn {
-    display: none;
   }
 }

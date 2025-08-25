@@ -1,0 +1,592 @@
+import React, { useState, useEffect } from "react";
+import "./BackOffice.css";
+
+// Données fictives
+const PRODUITS_DATA = [
+  {
+    id: 1,
+    name: "Cheeseburger Classique",
+    category: "Burgers",
+    description: "Un classique indémodable.",
+    ingredients: ["Steak de bœuf", "Cheddar", "Pain brioché"],
+    allergens: ["Gluten", "Lait"],
+    additions: [{ name: "Bacon", price: 1.5 }],
+    included: ["Sauce spéciale"],
+    price: 9.99,
+    image: "https://via.placeholder.com/150",
+    spiciness: 0,
+    tags: ["meilleur vendeur"],
+    featured: true,
+    stock: 50,
+  },
+  {
+    id: 2,
+    name: "Salade César",
+    category: "Salades",
+    description: "Salade fraîche avec poulet grillé.",
+    ingredients: ["Laitue romaine", "Poulet grillé", "Croûtons"],
+    allergens: ["Gluten", "Lait", "Œufs"],
+    additions: [],
+    included: ["Vinaigrette César"],
+    price: 8.99,
+    image: "https://via.placeholder.com/150",
+    spiciness: 0,
+    tags: ["sain"],
+    featured: false,
+    stock: 35,
+  },
+];
+
+const COMMANDES_DATA = [
+  { id: 101, customer: "Jean Dupont", status: "En cours", total: 24.98 },
+  { id: 102, customer: "Marie Leclerc", status: "Terminée", total: 15.49 },
+  { id: 103, customer: "Thomas Martin", status: "Annulée", total: 12.0 },
+];
+
+const UTILISATEURS_DATA = [
+  { id: 201, name: "Admin", email: "admin@resto.com", role: "Administrateur" },
+  { id: 202, name: "Utilisateur 1", email: "user1@email.com", role: "Client" },
+];
+
+const BackOffice = () => {
+  const [activeTab, setActiveTab] = useState("produits");
+  const [produits, setProduits] = useState(PRODUITS_DATA);
+  const [commandes, setCommandes] = useState(COMMANDES_DATA);
+  const [utilisateurs, setUtilisateurs] = useState(UTILISATEURS_DATA);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "",
+    description: "",
+    ingredients: [],
+    allergens: [],
+    additions: [],
+    included: [],
+    price: "",
+    image: "",
+    spiciness: 0,
+    tags: [],
+    featured: false,
+    stock: "",
+  });
+
+  // Réinitialiser le formulaire à la fermeture du modal
+  useEffect(() => {
+    if (!isModalOpen) {
+      setFormData({
+        name: "",
+        category: "",
+        description: "",
+        ingredients: [],
+        allergens: [],
+        additions: [],
+        included: [],
+        price: "",
+        image: "",
+        spiciness: 0,
+        tags: [],
+        featured: false,
+        stock: "",
+      });
+      setCurrentProduct(null);
+    }
+  }, [isModalOpen]);
+
+  // Ouvrir le modal
+  const handleOpenModal = (product = null) => {
+    setIsModalOpen(true);
+    setCurrentProduct(product);
+    if (product) {
+      setFormData(product);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // Gestion basique des inputs
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  // Gestion des champs multiples séparés par des virgules
+  const handleArrayChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value.split(",").map((item) => item.trim()),
+    }));
+  };
+
+  // Gestion dynamique des additions
+  const handleAdditionsChange = (e, index, field) => {
+    const newAdditions = [...formData.additions];
+    newAdditions[index][field] = e.target.value;
+    setFormData((prev) => ({ ...prev, additions: newAdditions }));
+  };
+
+  const handleAddAddition = () => {
+    setFormData((prev) => ({
+      ...prev,
+      additions: [...prev.additions, { name: "", price: "" }],
+    }));
+  };
+
+  const handleRemoveAddition = (index) => {
+    const newAdditions = formData.additions.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, additions: newAdditions }));
+  };
+
+  // Gestion des images
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, image: imageUrl }));
+    }
+  };
+
+  // Soumission du formulaire
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const dataToSubmit = {
+      ...formData,
+      price: parseFloat(formData.price),
+      stock: parseInt(formData.stock, 10),
+      spiciness: parseInt(formData.spiciness, 10),
+      additions: formData.additions.map((add) => ({
+        name: add.name,
+        price: parseFloat(add.price),
+      })),
+    };
+
+    if (currentProduct) {
+      // Modification
+      setProduits(
+        produits.map((p) =>
+          p.id === currentProduct.id
+            ? { ...dataToSubmit, id: currentProduct.id }
+            : p
+        )
+      );
+    } else {
+      // Nouveau produit
+      const newProduct = { ...dataToSubmit, id: Date.now() };
+      setProduits([...produits, newProduct]);
+    }
+    handleCloseModal();
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) {
+      setProduits(produits.filter((p) => p.id !== id));
+    }
+  };
+
+  // Gestion des commandes et utilisateurs
+  const handleOrderStatusChange = (orderId, newStatus) => {
+    setCommandes(
+      commandes.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+    );
+  };
+
+  const handleUserRoleChange = (userId, newRole) => {
+    setUtilisateurs(
+      utilisateurs.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+    );
+  };
+
+  // Affichage dynamique selon l'onglet
+  const renderContent = () => {
+    switch (activeTab) {
+      case "produits":
+        return (
+          <>
+            <div className="dashboard-content-header">
+              <h2 className="dashboard-content-title">Gestion des produits</h2>
+              <button
+                className="dashboard-btn-add"
+                onClick={() => handleOpenModal()}
+              >
+                + Ajouter un produit
+              </button>
+            </div>
+            <div className="dashboard-table-container">
+              <table className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {produits.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.id}</td>
+                      <td>{p.name}</td>
+                      <td>{p.category}</td>
+                      <td>{p.price.toFixed(2)} €</td>
+                      <td>{p.stock}</td>
+                      <td className="dashboard-actions-cell">
+                        <button
+                          className="dashboard-btn-edit"
+                          onClick={() => handleOpenModal(p)}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          className="dashboard-btn-delete"
+                          onClick={() => handleDelete(p.id)}
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        );
+      case "commandes":
+        return (
+          <>
+            <h2 className="dashboard-content-title">Gestion des commandes</h2>
+            <div className="dashboard-table-container">
+              <table className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>ID Commande</th>
+                    <th>Client</th>
+                    <th>Statut</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {commandes.map((o) => (
+                    <tr key={o.id}>
+                      <td>#{o.id}</td>
+                      <td>{o.customer}</td>
+                      <td>
+                        <select
+                          value={o.status}
+                          onChange={(e) =>
+                            handleOrderStatusChange(o.id, e.target.value)
+                          }
+                          className={`status-select status-${o.status
+                            .toLowerCase()
+                            .replace(" ", "-")}`}
+                        >
+                          <option value="En cours">En cours</option>
+                          <option value="Terminée">Terminée</option>
+                          <option value="Annulée">Annulée</option>
+                        </select>
+                      </td>
+                      <td>{o.total.toFixed(2)} €</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        );
+      case "utilisateurs":
+        return (
+          <>
+            <h2 className="dashboard-content-title">
+              Gestion des utilisateurs
+            </h2>
+            <div className="dashboard-table-container">
+              <table className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {utilisateurs.map((u) => (
+                    <tr key={u.id}>
+                      <td>{u.id}</td>
+                      <td>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>
+                        <select
+                          value={u.role}
+                          onChange={(e) =>
+                            handleUserRoleChange(u.id, e.target.value)
+                          }
+                        >
+                          <option value="Administrateur">Administrateur</option>
+                          <option value="Client">Client</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="dashboard-container">
+      {/* Sidebar */}
+      <aside className="dashboard-sidebar">
+        <h1 className="dashboard-logo">Panneau Admin</h1>
+        <nav className="dashboard-nav">
+          <ul>
+            <li
+              className={activeTab === "produits" ? "active" : ""}
+              onClick={() => setActiveTab("produits")}
+            >
+              <span>Produits</span>
+            </li>
+            <li
+              className={activeTab === "commandes" ? "active" : ""}
+              onClick={() => setActiveTab("commandes")}
+            >
+              <span>Commandes</span>
+            </li>
+            <li
+              className={activeTab === "utilisateurs" ? "active" : ""}
+              onClick={() => setActiveTab("utilisateurs")}
+            >
+              <span>Utilisateurs</span>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      {/* Contenu principal */}
+      <main className="dashboard-main">{renderContent()}</main>
+
+      {/* Modal produit */}
+      {isModalOpen && (
+        <div className="dashboard-modal-overlay">
+          <div className="dashboard-modal">
+            <div className="dashboard-modal-header">
+              <h3>
+                {currentProduct ? "Modifier le produit" : "Ajouter un produit"}
+              </h3>
+              <button
+                className="dashboard-modal-close"
+                onClick={handleCloseModal}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="dashboard-modal-content">
+              <form onSubmit={handleSubmit}>
+                <div className="dashboard-form-group">
+                  <label>Nom du produit</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Catégorie</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value="Burgers">Burgers</option>
+                    <option value="Salades">Salades</option>
+                    <option value="Boissons">Boissons</option>
+                    <option value="Desserts">Desserts</option>
+                  </select>
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Ingrédients (séparés par des virgules)</label>
+                  <input
+                    type="text"
+                    name="ingredients"
+                    value={formData.ingredients.join(", ")}
+                    onChange={handleArrayChange}
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Allergènes (séparés par des virgules)</label>
+                  <input
+                    type="text"
+                    name="allergens"
+                    value={formData.allergens.join(", ")}
+                    onChange={handleArrayChange}
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Inclus (séparés par des virgules)</label>
+                  <input
+                    type="text"
+                    name="included"
+                    value={formData.included.join(", ")}
+                    onChange={handleArrayChange}
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Additions</label>
+                  {formData.additions.map((addition, index) => (
+                    <div key={index} className="dashboard-addition-group">
+                      <input
+                        type="text"
+                        placeholder="Nom de l'addition"
+                        value={addition.name}
+                        onChange={(e) =>
+                          handleAdditionsChange(e, index, "name")
+                        }
+                      />
+                      <input
+                        type="number"
+                        placeholder="Prix"
+                        value={addition.price}
+                        onChange={(e) =>
+                          handleAdditionsChange(e, index, "price")
+                        }
+                        step="0.01"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAddition(index)}
+                        className="dashboard-btn-remove-addition"
+                      >
+                        -
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleAddAddition}
+                    className="dashboard-btn-add-addition"
+                  >
+                    + Ajouter une addition
+                  </button>
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Prix (€)</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    step="0.01"
+                    required
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Stock</label>
+                  <input
+                    type="number"
+                    name="stock"
+                    value={formData.stock}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Image</label>
+                  <div className="dashboard-image-input-group">
+                    <input
+                      type="text"
+                      name="image"
+                      placeholder="Coller l'URL de l'image ici"
+                      value={formData.image}
+                      onChange={handleChange}
+                    />
+                    <span className="or-divider">OU</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                  </div>
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Piquant (0-5)</label>
+                  <input
+                    type="number"
+                    name="spiciness"
+                    value={formData.spiciness}
+                    onChange={handleChange}
+                    min="0"
+                    max="5"
+                  />
+                </div>
+
+                <div className="dashboard-form-group">
+                  <label>Tags (séparés par des virgules)</label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags.join(", ")}
+                    onChange={handleArrayChange}
+                  />
+                </div>
+
+                <div className="dashboard-form-group dashboard-checkbox-group">
+                  <input
+                    type="checkbox"
+                    name="featured"
+                    checked={formData.featured}
+                    onChange={handleChange}
+                  />
+                  <label>Produit en vedette</label>
+                </div>
+
+                <button type="submit" className="dashboard-form-submit">
+                  {currentProduct
+                    ? "Enregistrer les modifications"
+                    : "Ajouter le produit"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default BackOffice;

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Burger.css";
-
 import heroBurger from "../../../assets/images/Jumbo_max.png";
 
 const Burger = () => {
@@ -9,33 +8,16 @@ const Burger = () => {
   const [burgers, setBurgers] = useState([]);
   const [quantityMap, setQuantityMap] = useState({});
 
-  // 🔹 Charger les burgers depuis l'API
   useEffect(() => {
     fetch("https://grillzburger.onrender.com/api/burgers")
       .then((res) => res.json())
       .then((data) => {
         setBurgers(data);
-        // Initialiser les quantités à 1
         const qtyMap = {};
         data.forEach((b) => (qtyMap[b._id] = 1));
         setQuantityMap(qtyMap);
       })
       .catch((err) => console.error("Erreur récupération burgers :", err));
-  }, []);
-
-  // 🔹 Animation Intersection Observer pour les cartes
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("show");
-        });
-      },
-      { threshold: 0.12 }
-    );
-    document
-      .querySelectorAll(".burger-reveal")
-      .forEach((el) => observer.observe(el));
   }, []);
 
   const handleQuantityChange = (id, type) => {
@@ -51,6 +33,10 @@ const Burger = () => {
     return (burger.price * quantityMap[burger._id]).toFixed(2);
   };
 
+  const handleView = (burger) => {
+    navigate(`/produit_burger/${burger._id}`);
+  };
+
   const handleAddToCart = (burger) => {
     const order = {
       product: burger.name,
@@ -61,21 +47,14 @@ const Burger = () => {
     alert(`${burger.name} ajouté au panier !`);
   };
 
-  const handleView = () => {
-    navigate("/produit_burger");
-  };
-
   return (
     <>
-      {/* ====== HERO ====== */}
       <header className="burger-hero-wrap" id="burger-hero">
         <div
           className="burger-hero-bg"
-          aria-hidden="true"
           style={{ backgroundImage: `url(${heroBurger})` }}
-        ></div>
-        <div className="burger-hero-overlay" aria-hidden="true"></div>
-
+        />
+        <div className="burger-hero-overlay" />
         <main className="burger-main-content">
           <h1 className="burger-titre-page">Nos Burgers</h1>
           <section className="burger-hero-section">
@@ -87,7 +66,6 @@ const Burger = () => {
         </main>
       </header>
 
-      {/* ====== LISTE DES BURGERS ====== */}
       <section id="burgers" className="burger-section burger-reveal">
         <h2 className="burger-section-title">Notre Sélection</h2>
         <p className="burger-section-subtitle">
@@ -136,7 +114,10 @@ const Burger = () => {
                 >
                   Ajouter au panier
                 </button>
-                <button className="burger-btn-view" onClick={handleView}>
+                <button
+                  className="burger-btn-view"
+                  onClick={() => handleView(burger)}
+                >
                   Voir
                 </button>
               </div>

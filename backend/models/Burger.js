@@ -12,6 +12,11 @@ const burgerSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        category: {
+            type: String,
+            required: true,
+            enum: ["Burgers", "Salades", "Boissons", "Desserts"],
+        },
         ingredients: {
             type: [String],
             default: [],
@@ -36,6 +41,10 @@ const burgerSchema = new mongoose.Schema(
         price: {
             type: Number,
             required: true,
+        },
+        stock: {
+            type: Number,
+            default: 0,
         },
         image: {
             type: String,

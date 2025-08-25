@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./ProduitBurger.css";
+import { CartContext } from "../../context/CartContext";
 
 const ProduitBurger = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
+
   const [burger, setBurger] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState({});
 
-  // 🔹 Récupération du burger via l'API
   useEffect(() => {
     fetch(`https://grillzburger.onrender.com/api/burgers/${id}`)
       .then((res) => {
@@ -18,13 +20,11 @@ const ProduitBurger = () => {
       })
       .then((data) => {
         setBurger(data);
-
-        // Initialiser extras disponibles
         const initialExtras = {};
         data.additions?.forEach((extra) => (initialExtras[extra.name] = false));
         setExtras(initialExtras);
       })
-      .catch(() => navigate("/burger")); // si erreur, retourne à la liste des burgers
+      .catch(() => navigate("/burger"));
   }, [id, navigate]);
 
   const handleExtraChange = (name) => {
@@ -48,12 +48,14 @@ const ProduitBurger = () => {
 
   const handleAddToCart = () => {
     const order = {
+      id: burger._id,
       product: burger.name,
       quantity,
       extras: Object.keys(extras).filter((key) => extras[key]),
       totalPrice: calculatePrice(),
+      image: burger.image,
     };
-    console.log("Produit ajouté au panier :", order);
+    addToCart(order);
     alert(`${burger.name} ajouté au panier !`);
   };
 

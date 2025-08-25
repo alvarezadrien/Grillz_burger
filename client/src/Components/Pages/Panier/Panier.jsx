@@ -1,70 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Panier.css";
+import { CartContext } from "../../context/CartContext";
 
 const Panier = () => {
   const navigate = useNavigate();
-
-  // --- Données fictives ajustées (pour un feeling plus premium) ---
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "Tartelette Fraise & Basilic",
-      desc: "Fine pâte sablée, crème légère au mascarpone et fraises de saison 🍓",
-      price: 6.5,
-      quantity: 2,
-      img: "https://source.unsplash.com/100x100/?gourmet,tart,strawberry",
-    },
-    {
-      id: 2,
-      name: "Paris-Brest Signature",
-      desc: "Couronne de pâte à chou, praliné noisette croustillant et crème mousseline 🌰",
-      price: 5.8,
-      quantity: 1,
-      img: "https://source.unsplash.com/100x100/?paris-brest,patisserie",
-    },
-    {
-      id: 3,
-      name: "Box de 6 Macarons",
-      desc: "Notre sélection du jour : Vanille de Madagascar, Framboise et Pistache 🌸",
-      price: 18.0,
-      quantity: 1,
-      img: "https://source.unsplash.com/100x100/?macarons,luxury",
-    },
-  ]);
-
-  // --- Fonctions (inchangées car elles sont fonctionnelles) ---
-  const updateQuantity = (id, action) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity:
-                action === "plus"
-                  ? item.quantity + 1
-                  : item.quantity > 1
-                  ? item.quantity - 1
-                  : 1,
-            }
-          : item
-      )
-    );
-  };
-
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const calculateTotal = () => {
-    return cart
-      .reduce((acc, item) => acc + item.price * item.quantity, 0)
-      .toFixed(2);
-  };
+  const { cart, updateQuantity, removeFromCart, clearCart, calculateTotal } =
+    useContext(CartContext);
 
   const handleCheckout = () => {
     alert(
@@ -86,10 +28,7 @@ const Panier = () => {
       {cart.length === 0 ? (
         <div className="empty-cart">
           <p>Votre panier est vide... Vite, un petit plaisir ! 😢</p>
-          <button
-            className="btn-primary" // Classe ajustée
-            onClick={() => navigate("/desserts")}
-          >
+          <button className="btn-primary" onClick={() => navigate("/desserts")}>
             Découvrir nos créations
           </button>
         </div>
@@ -99,10 +38,14 @@ const Panier = () => {
           <div className="cart-items">
             {cart.map((item) => (
               <div className="cart-item" key={item.id}>
-                <img src={item.img} alt={item.name} className="cart-img" />
+                <img src={item.image} alt={item.product} className="cart-img" />
                 <div className="cart-details">
-                  <h3>{item.name}</h3>
-                  <p className="cart-desc">{item.desc}</p>
+                  <h3>{item.product}</h3>
+                  {item.extras && item.extras.length > 0 && (
+                    <p className="cart-desc">
+                      Extras : {item.extras.join(", ")}
+                    </p>
+                  )}
                   <div className="cart-qty">
                     <button onClick={() => updateQuantity(item.id, "minus")}>
                       –
@@ -114,7 +57,7 @@ const Panier = () => {
                   </div>
                 </div>
                 <div className="cart-price">
-                  <p>{(item.price * item.quantity).toFixed(2)} €</p>
+                  <p>{(item.totalPrice * 1).toFixed(2)} €</p>
                   <button
                     className="btn-remove"
                     onClick={() => removeFromCart(item.id)}

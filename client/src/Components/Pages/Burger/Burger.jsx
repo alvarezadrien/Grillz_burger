@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Burger.css";
 import heroBurger from "../../../assets/images/Jumbo_max.png";
+import { CartContext } from "../../context/CartContext";
 
 const Burger = () => {
   const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
+
   const [burgers, setBurgers] = useState([]);
   const [quantityMap, setQuantityMap] = useState({});
 
@@ -37,11 +40,14 @@ const Burger = () => {
 
   const handleAddToCart = (burger) => {
     const order = {
+      id: burger._id,
       product: burger.name,
       quantity: quantityMap[burger._id],
       totalPrice: calculatePrice(burger),
+      image: burger.image,
+      extras: [],
     };
-    console.log("Burger ajouté au panier :", order);
+    addToCart(order);
     alert(`${burger.name} ajouté au panier !`);
   };
 

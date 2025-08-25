@@ -20,6 +20,11 @@
   text-align: center;
 }
 
+.haeder-text {
+  font-size: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 .hero-section {
   display: grid;
   grid-template-columns: 1fr 1.2fr;

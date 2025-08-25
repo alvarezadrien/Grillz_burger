@@ -1,112 +1,148 @@
-// src/pages/Panier.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Panier.css";
 
 const Panier = () => {
-  // Données fictives pour tester
-  const [cartItems, setCartItems] = useState([
+  const navigate = useNavigate();
+
+  // --- Données fictives ajustées (pour un feeling plus premium) ---
+  const [cart, setCart] = useState([
     {
-      product: "Classic Grillz",
+      id: 1,
+      name: "Tartelette Fraise & Basilic",
+      desc: "Fine pâte sablée, crème légère au mascarpone et fraises de saison 🍓",
+      price: 6.5,
       quantity: 2,
-      extras: ["Fromage", "Bacon"],
-      drinkChoice: "Coca-Cola",
-      basePrice: 9.99,
-      extrasPrice: 3.5, // fromage + bacon
-      totalPrice: ((9.99 + 3.5) * 2).toFixed(2),
+      img: "https://source.unsplash.com/100x100/?gourmet,tart,strawberry",
     },
     {
-      product: "Veggie Delight",
+      id: 2,
+      name: "Paris-Brest Signature",
+      desc: "Couronne de pâte à chou, praliné noisette croustillant et crème mousseline 🌰",
+      price: 5.8,
       quantity: 1,
-      extras: ["Salade", "Tomates", "Oignons"],
-      drinkChoice: "Sprite",
-      basePrice: 8.5,
-      extrasPrice: 2.5,
-      totalPrice: (8.5 + 2.5).toFixed(2),
+      img: "https://source.unsplash.com/100x100/?paris-brest,patisserie",
     },
     {
-      product: "Double Bacon Burger",
-      quantity: 3,
-      extras: ["Extra Burger", "Frites", "Boisson"],
-      drinkChoice: "Pepsi",
-      basePrice: 11.99,
-      extrasPrice: 8.0,
-      totalPrice: ((11.99 + 8.0) * 3).toFixed(2),
+      id: 3,
+      name: "Box de 6 Macarons",
+      desc: "Notre sélection du jour : Vanille de Madagascar, Framboise et Pistache 🌸",
+      price: 18.0,
+      quantity: 1,
+      img: "https://source.unsplash.com/100x100/?macarons,luxury",
     },
   ]);
 
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    const newTotal = cartItems.reduce(
-      (sum, item) => sum + Number(item.totalPrice),
-      0
+  // --- Fonctions (inchangées car elles sont fonctionnelles) ---
+  const updateQuantity = (id, action) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity:
+                action === "plus"
+                  ? item.quantity + 1
+                  : item.quantity > 1
+                  ? item.quantity - 1
+                  : 1,
+            }
+          : item
+      )
     );
-    setTotal(newTotal.toFixed(2));
-  }, [cartItems]);
-
-  const handleQuantityChange = (index, type) => {
-    setCartItems((prev) => {
-      const newCart = [...prev];
-      if (type === "minus") {
-        newCart[index].quantity = Math.max(1, newCart[index].quantity - 1);
-      } else {
-        newCart[index].quantity += 1;
-      }
-      newCart[index].totalPrice = (
-        (newCart[index].basePrice + (newCart[index].extrasPrice || 0)) *
-        newCart[index].quantity
-      ).toFixed(2);
-      return newCart;
-    });
   };
 
-  const handleRemove = (index) => {
-    setCartItems((prev) => prev.filter((_, i) => i !== index));
+  const removeFromCart = (id) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const calculateTotal = () => {
+    return cart
+      .reduce((acc, item) => acc + item.price * item.quantity, 0)
+      .toFixed(2);
+  };
+
+  const handleCheckout = () => {
+    alert(
+      "🎉 Votre moment gourmand est en route ! Merci pour votre commande (simulée)."
+    );
+    clearCart();
+    navigate("/");
   };
 
   return (
-    <div className="panier-container">
-      <h1>Mon Panier</h1>
-      {cartItems.length === 0 ? (
-        <p>Votre panier est vide.</p>
+    <div className="panier-page">
+      <header className="panier-header">
+        <h1>Votre Sélection Pâtissière 🛒</h1>
+        <p>
+          Il est temps de finaliser votre commande et de vous faire plaisir.
+        </p>
+      </header>
+
+      {cart.length === 0 ? (
+        <div className="empty-cart">
+          <p>Votre panier est vide... Vite, un petit plaisir ! 😢</p>
+          <button
+            className="btn-primary" // Classe ajustée
+            onClick={() => navigate("/desserts")}
+          >
+            Découvrir nos créations
+          </button>
+        </div>
       ) : (
-        <>
-          <div className="panier-items">
-            {cartItems.map((item, index) => (
-              <div key={index} className="panier-item">
-                <div className="item-info">
-                  <h2>{item.product}</h2>
-                  {item.extras && item.extras.length > 0 && (
-                    <p>
-                      Extras: {item.extras.join(", ")}
-                      {item.drinkChoice ? ` (${item.drinkChoice})` : ""}
-                    </p>
-                  )}
+        <section className="panier-content">
+          {/* Section Gauche : Détails des articles */}
+          <div className="cart-items">
+            {cart.map((item) => (
+              <div className="cart-item" key={item.id}>
+                <img src={item.img} alt={item.name} className="cart-img" />
+                <div className="cart-details">
+                  <h3>{item.name}</h3>
+                  <p className="cart-desc">{item.desc}</p>
+                  <div className="cart-qty">
+                    <button onClick={() => updateQuantity(item.id, "minus")}>
+                      –
+                    </button>
+                    <input type="number" value={item.quantity} readOnly />
+                    <button onClick={() => updateQuantity(item.id, "plus")}>
+                      +
+                    </button>
+                  </div>
                 </div>
-                <div className="item-quantity">
-                  <button onClick={() => handleQuantityChange(index, "minus")}>
-                    -
-                  </button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => handleQuantityChange(index, "plus")}>
-                    +
+                <div className="cart-price">
+                  <p>{(item.price * item.quantity).toFixed(2)} €</p>
+                  <button
+                    className="btn-remove"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    Retirer
                   </button>
                 </div>
-                <div className="item-price">${item.totalPrice}</div>
-                <button
-                  className="remove-btn"
-                  onClick={() => handleRemove(index)}
-                >
-                  Supprimer
-                </button>
               </div>
             ))}
           </div>
-          <div className="panier-total">
-            <h2>Total: ${total}</h2>
-            <button className="btn-checkout">Passer à la caisse</button>
-          </div>
-        </>
+
+          {/* Section Droite : Résumé de la commande */}
+          <aside className="cart-summary">
+            <h2>Récapitulatif</h2>
+            <p>
+              Total de la commande : <strong>{calculateTotal()} €</strong>
+            </p>
+            <button
+              className="btn-checkout btn-primary"
+              onClick={handleCheckout}
+            >
+              Valider et Payer
+            </button>
+            <button className="btn-clear btn-secondary" onClick={clearCart}>
+              Recommencer la sélection
+            </button>
+          </aside>
+        </section>
       )}
     </div>
   );

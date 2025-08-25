@@ -2,45 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Burger.css";
 
-import ClassicBurgerImg from "../../../assets/images/Classic_grillz.png";
-import VeggieBurgerImg from "../../../assets/images/Special_bbq.avif";
-import BbqBurgerImg from "../../../assets/images/Jumbo_max.png";
 import heroBurger from "../../../assets/images/Jumbo_max.png";
-
-const burgersData = [
-  {
-    id: 1,
-    name: "Classic Cheeseburger",
-    desc: "Un classique indémodable avec steak de bœuf, cheddar fondant, laitue, tomate et cornichons.",
-    price: 9.99,
-    img: ClassicBurgerImg,
-  },
-  {
-    id: 2,
-    name: "Smoky BBQ Burger",
-    desc: "Galette de bœuf grillée, sauce barbecue fumée, oignons croustillants et bacon grillé.",
-    price: 11.5,
-    img: BbqBurgerImg,
-  },
-  {
-    id: 3,
-    name: "Veggie Delight",
-    desc: "Galette de légumes savoureuse avec avocat, oignons caramélisés et notre sauce spéciale.",
-    price: 10.99,
-    img: VeggieBurgerImg,
-  },
-];
 
 const Burger = () => {
   const navigate = useNavigate();
+  const [burgers, setBurgers] = useState([]);
+  const [quantityMap, setQuantityMap] = useState({});
 
-  const [quantityMap, setQuantityMap] = useState(
-    burgersData.reduce((acc, b) => {
-      acc[b.id] = 1;
-      return acc;
-    }, {})
-  );
+  // 🔹 Charger les burgers depuis l'API
+  useEffect(() => {
+    fetch("https://grillzburger.onrender.com/api/burgers")
+      .then((res) => res.json())
+      .then((data) => {
+        setBurgers(data);
+        // Initialiser les quantités à 1
+        const qtyMap = {};
+        data.forEach((b) => (qtyMap[b._id] = 1));
+        setQuantityMap(qtyMap);
+      })
+      .catch((err) => console.error("Erreur récupération burgers :", err));
+  }, []);
 
+  // 🔹 Animation Intersection Observer pour les cartes
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -65,13 +48,13 @@ const Burger = () => {
   };
 
   const calculatePrice = (burger) => {
-    return (burger.price * quantityMap[burger.id]).toFixed(2);
+    return (burger.price * quantityMap[burger._id]).toFixed(2);
   };
 
   const handleAddToCart = (burger) => {
     const order = {
       product: burger.name,
-      quantity: quantityMap[burger.id],
+      quantity: quantityMap[burger._id],
       totalPrice: calculatePrice(burger),
     };
     console.log("Burger ajouté au panier :", order);
@@ -105,7 +88,7 @@ const Burger = () => {
       </header>
 
       {/* ====== LISTE DES BURGERS ====== */}
-      <section id="burgers" className="burger-reveal burger-section">
+      <section id="burgers" className="burger-section burger-reveal">
         <h2 className="burger-section-title">Notre Sélection</h2>
         <p className="burger-section-subtitle">
           Des recettes originales et des classiques revisités pour tous les
@@ -113,31 +96,39 @@ const Burger = () => {
         </p>
 
         <div className="burger-products-grid">
-          {burgersData.map((burger) => (
-            <article className="burger-product-card" key={burger.id}>
+          {burgers.map((burger) => (
+            <article
+              className="burger-product-card burger-reveal"
+              key={burger._id}
+            >
               <img
                 className="burger-product-img"
-                src={burger.img}
+                src={burger.img || "/default-burger.png"}
                 alt={burger.name}
               />
               <div className="burger-product-header">
                 <h3 className="burger-product-title">{burger.name}</h3>
               </div>
-              <p className="burger-product-desc">{burger.desc}</p>
+              <p className="burger-product-desc">{burger.description}</p>
+
               <div className="burger-quantity">
                 <button
-                  onClick={() => handleQuantityChange(burger.id, "minus")}
+                  onClick={() => handleQuantityChange(burger._id, "minus")}
                 >
                   -
                 </button>
-                <input type="number" value={quantityMap[burger.id]} readOnly />
-                <button onClick={() => handleQuantityChange(burger.id, "plus")}>
+                <input type="number" value={quantityMap[burger._id]} readOnly />
+                <button
+                  onClick={() => handleQuantityChange(burger._id, "plus")}
+                >
                   +
                 </button>
               </div>
+
               <p className="burger-product-price">
                 <span>${calculatePrice(burger)}</span>
               </p>
+
               <div className="burger-product-buttons">
                 <button
                   className="burger-btn-add"

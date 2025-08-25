@@ -13,19 +13,69 @@ router.get("/", async (req, res) => {
     }
 });
 
+// ➡️ GET un burger par ID
+router.get("/:id", async (req, res) => {
+    try {
+        const burger = await Burger.findById(req.params.id);
+        if (!burger) return res.status(404).json({ error: "Burger non trouvé" });
+        res.status(200).json(burger);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la récupération du burger" });
+    }
+});
+
 // ➡️ POST ajouter un burger
 router.post("/", async (req, res) => {
     try {
-        const { name, price, ingredients } = req.body;
+        const { name, description, ingredients, allergens, additions, price, img, spiciness, tags, bestSeller } = req.body;
+
         if (!name || !price) {
             return res.status(400).json({ error: "Le nom et le prix sont requis" });
         }
 
-        const newBurger = new Burger({ name, price, ingredients });
+        const newBurger = new Burger({
+            name,
+            description,
+            ingredients,
+            allergens,
+            additions,
+            price,
+            img,
+            spiciness,
+            tags,
+            bestSeller,
+        });
+
         await newBurger.save();
         res.status(201).json(newBurger);
     } catch (err) {
         res.status(500).json({ error: "Erreur lors de l'ajout du burger" });
+    }
+});
+
+// ➡️ PUT modifier un burger
+router.put("/:id", async (req, res) => {
+    try {
+        const updatedBurger = await Burger.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true } // renvoie le document mis à jour
+        );
+        if (!updatedBurger) return res.status(404).json({ error: "Burger non trouvé" });
+        res.status(200).json(updatedBurger);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la modification du burger" });
+    }
+});
+
+// ➡️ DELETE supprimer un burger
+router.delete("/:id", async (req, res) => {
+    try {
+        const deletedBurger = await Burger.findByIdAndDelete(req.params.id);
+        if (!deletedBurger) return res.status(404).json({ error: "Burger non trouvé" });
+        res.status(200).json({ message: "Burger supprimé avec succès" });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la suppression du burger" });
     }
 });
 

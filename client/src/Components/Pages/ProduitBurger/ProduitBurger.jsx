@@ -8,30 +8,19 @@ const ProduitBurger = () => {
   const [burger, setBurger] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState({});
-  const [isPromoActive, setIsPromoActive] = useState(false);
-  const [page, setPage] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
 
-  const extrasPerPage = 6; // 2 lignes de 3 extras par page
-
-  // 🔹 Récupérer le burger depuis l'API
+  // 🔹 Récupération du burger depuis l'API
   useEffect(() => {
     fetch(`https://grillzburger.onrender.com/api/burgers/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        if (!data) navigate("/burgers");
+        if (!data) return navigate("/burgers");
         setBurger(data);
 
-        // Initialiser extras disponibles
+        // Initialiser les extras disponibles
         const initialExtras = {};
-        data.extras?.forEach((extra) => (initialExtras[extra.name] = false));
+        data.additions?.forEach((extra) => (initialExtras[extra.name] = false));
         setExtras(initialExtras);
-
-        // Vérifier promo
-        if (data.promo) {
-          const hour = new Date().getHours();
-          if (hour >= 11 && hour < 14) setIsPromoActive(true);
-        }
       })
       .catch(() => navigate("/burgers"));
   }, [id, navigate]);
@@ -49,79 +38,35 @@ const ProduitBurger = () => {
   const calculatePrice = () => {
     if (!burger) return 0;
     let extrasPrice = 0;
-    burger.extras?.forEach((extra) => {
+    burger.additions?.forEach((extra) => {
       if (extras[extra.name]) extrasPrice += extra.price || 0;
     });
-    let price = (burger.price + extrasPrice) * quantity;
-    if (isPromoActive) price *= 0.75; // Promo -25%
-    return price.toFixed(2);
+    return ((burger.price + extrasPrice) * quantity).toFixed(2);
   };
 
-  const handleAddToCart = () => {
-    const order = {
-      product: burger.name,
-      quantity,
-      extras: Object.keys(extras).filter((key) => extras[key]),
-      totalPrice: calculatePrice(),
-    };
-    console.log("Produit ajouté au panier :", order);
-    alert(`${burger.name} ajouté au panier !`);
-  };
-
-  if (!burger) return null;
-
-  // Pagination des extras
-  const totalPages = Math.ceil((burger.extras?.length || 0) / extrasPerPage);
-  const displayedExtras = burger.extras?.slice(
-    page * extrasPerPage,
-    page * extrasPerPage + extrasPerPage
-  );
-
-  const setPageWithAnimation = (newPage) => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      setPage(newPage);
-      setIsAnimating(false);
-    }, 300);
-  };
+  if (!burger) return <p>Chargement du burger...</p>;
 
   return (
     <div className="produit-container">
       <div className="produit-main">
         <div className="produit-img">
-          <img src={burger.imagec} alt={burger.name} />
-          {isPromoActive && <div className="badge-promo">-25% Promo !</div>}
+          <img src={burger.image} alt={burger.name} />
         </div>
 
-        {displayedExtras?.length > 0 && (
+        {burger.additions?.length > 0 && (
           <div className="extras-carousel-container">
-            <div className={`extras-carousel ${isAnimating ? "fade-out" : ""}`}>
-              {displayedExtras.map((extra) => (
-                <div
-                  key={extra.name}
-                  className={`extra-item ${extras[extra.name] ? "active" : ""}`}
-                  onClick={() => handleExtraChange(extra.name)}
-                >
-                  <div
-                    className="extra-img"
-                    style={{ backgroundImage: `url(${extra.img})` }}
-                  />
-                  <div className="extra-info">
-                    <span>{extra.label}</span>
-                    <small>+${extra.price.toFixed(2)}</small>
-                  </div>
+            {burger.additions.map((extra) => (
+              <div
+                key={extra._id}
+                className={`extra-item ${extras[extra.name] ? "active" : ""}`}
+                onClick={() => handleExtraChange(extra.name)}
+              >
+                <div className="extra-info">
+                  <span>{extra.name}</span>
+                  <small>+${extra.price.toFixed(2)}</small>
                 </div>
-              ))}
-            </div>
-            <div className="pagination-dots">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <span
-                  key={i}
-                  className={`dot ${page === i ? "active" : ""}`}
-                  onClick={() => setPageWithAnimation(i)}
-                ></span>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -131,16 +76,7 @@ const ProduitBurger = () => {
         <p className="produit-desc">{burger.description}</p>
 
         <div className="produit-price">
-          {isPromoActive ? (
-            <>
-              <span className="old-price">${burger.price.toFixed(2)}</span>{" "}
-              <span className="promo-price">
-                ${(burger.price * 0.75).toFixed(2)}
-              </span>
-            </>
-          ) : (
-            <span>${burger.price.toFixed(2)}</span>
-          )}
+          <span>${burger.price.toFixed(2)}</span>
         </div>
 
         <div className="quantity">
@@ -161,7 +97,10 @@ const ProduitBurger = () => {
           <h2>Total : ${calculatePrice()}</h2>
         </div>
 
-        <button className="btn-add" onClick={handleAddToCart}>
+        <button
+          className="btn-add"
+          onClick={() => alert(`${burger.name} ajouté au panier !`)}
+        >
           Ajouter au panier
         </button>
       </div>

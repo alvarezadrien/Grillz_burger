@@ -103,7 +103,7 @@ const Burger = () => {
             >
               <img
                 className="burger-product-img"
-                src={burger.img || "/default-burger.png"}
+                src={burger.image || ""}
                 alt={burger.name}
               />
               <div className="burger-product-header">

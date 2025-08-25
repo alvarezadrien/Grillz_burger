@@ -34,7 +34,7 @@ const BackOffice = () => {
     spiciness: 0,
     tags: [],
     featured: false,
-    stock: false, // booléen
+    stock: false,
   });
 
   // Reset form si modal fermé
@@ -153,11 +153,23 @@ const BackOffice = () => {
     }));
   };
 
-  const handleImageUpload = (e) => {
+  // --- Upload image vers backend ---
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({ ...prev, image: imageUrl }));
+    if (!file) return;
+
+    const formDataImg = new FormData();
+    formDataImg.append("image", file);
+
+    try {
+      const res = await fetch(`${API_URL}/api/upload`, {
+        method: "POST",
+        body: formDataImg,
+      });
+      const data = await res.json();
+      setFormData((prev) => ({ ...prev, image: data.url }));
+    } catch (err) {
+      console.error("Erreur upload image:", err);
     }
   };
 

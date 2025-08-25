@@ -28,8 +28,6 @@ const Navbar = () => {
     { label: "ACCUEIL", path: "/" },
     { label: "BURGERS", path: "/burger" },
     { label: "SPÉCIAUX", path: "/speciaux" },
-    { label: "JUMBOS", path: "/jumbos" },
-    { label: "ENTRÉES", path: "/entrees" },
     { label: "SALADES", path: "/salades" },
     { label: "DESSERTS", path: "/dessert" },
     { label: "BOISSONS", path: "/boissons" },

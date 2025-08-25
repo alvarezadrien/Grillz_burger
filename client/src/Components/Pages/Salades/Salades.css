@@ -1,0 +1,249 @@
+/* ====== GLOBAL STYLES ====== */
+.salad-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition-delay: 0.2s;
+}
+
+.salad-reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ====== HERO SECTION ====== */
+.salad-hero-wrap {
+  position: relative;
+  width: 100%;
+  height: 60vh; /* Adjust height as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.salad-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  transform: scale(1.1);
+  animation: bg-zoom 1.2s forwards;
+  will-change: transform;
+}
+
+.salad-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.salad-main-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1240px;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.salad-titre-page {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #fff, #c6ff5f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-reveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.salad-hero-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.salad-hero-text {
+  font-size: 1.2rem;
+  max-width: 600px;
+  line-height: 1.6;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* KEYFRAMES */
+@keyframes bg-zoom {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes text-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====== LISTE DES SALADES ====== */
+.salad-section {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.salad-section-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.salad-section-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+/* ====== GRILLE PRODUITS ====== */
+.salad-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+@media (max-width: 1024px) {
+  .salad-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .salad-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.salad-product-card {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 14px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  overflow: hidden;
+}
+
+.salad-product-card:hover {
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.salad-product-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.salad-product-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.salad-product-desc {
+  margin: 8px 0 14px;
+}
+
+.salad-product-price {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.salad-quantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.salad-quantity input {
+  width: 50px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.salad-quantity button {
+  background: var(--lime-green);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.salad-quantity button:hover {
+  background: var(--lime-glow);
+}
+
+.salad-product-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.salad-btn-add,
+.salad-btn-view {
+  font-weight: 700;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.salad-btn-add {
+  background: var(--lime-green);
+}
+
+.salad-btn-add:hover {
+  background: var(--lime-glow);
+}
+
+.salad-btn-view {
+  background: var(--lime-green);
+}
+
+.salad-btn-view:hover {
+  background: var(--lime-glow);
+}

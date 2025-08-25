@@ -8,6 +8,7 @@ import ProduitBurger from "./Components/Pages/ProduitBurger/ProduitBurger";
 import Dessert from "./Components/Pages/Dessert/Dessert";
 import Panier from "./Components/Pages/Panier/Panier";
 import Burger from "./Components/Pages/Burger/Burger";
+import Salades from "./Components/Pages/Salades/Salades";
 
 // Import de la navbar et du footer
 import Navbar from "./Components/Navbar/Navbar";
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/dessert" element={<Dessert />} />
         <Route path="/panier" element={<Panier />} />
         <Route path="/burger" element={<Burger />} />
+        <Route path="/salades" element={<Salades />} />
       </Routes>
       <Footer />
     </Router>

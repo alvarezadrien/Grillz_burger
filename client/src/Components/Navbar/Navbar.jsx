@@ -27,7 +27,6 @@ const Navbar = () => {
   const menuItems = [
     { label: "ACCUEIL", path: "/" },
     { label: "BURGERS", path: "/burger" },
-    { label: "SPÉCIAUX", path: "/speciaux" },
     { label: "SALADES", path: "/salades" },
     { label: "DESSERTS", path: "/dessert" },
     { label: "BOISSONS", path: "/boissons" },

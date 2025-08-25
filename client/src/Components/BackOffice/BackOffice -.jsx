@@ -34,9 +34,10 @@ const BackOffice = () => {
     spiciness: 0,
     tags: [],
     featured: false,
-    stock: false, // booléen Oui/Non
+    stock: false, // booléen
   });
 
+  // Reset form si modal fermé
   useEffect(() => {
     if (!isModalOpen) {
       setFormData({
@@ -82,7 +83,7 @@ const BackOffice = () => {
     const dataToSubmit = {
       ...formData,
       price: parseFloat(formData.price),
-      stock: formData.stock ? 1 : 0, // envoyer comme 1/0 au backend
+      stock: formData.stock ? 1 : 0,
       spiciness: parseInt(formData.spiciness, 10),
       additions: formData.additions.map((add) => ({
         name: add.name,
@@ -115,23 +116,23 @@ const BackOffice = () => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?"))
       return;
     try {
-      await fetch(`${API_URL}/api/burgers/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/api/burgers/${id}`, {
+        method: "DELETE",
+      });
       fetchProduits();
     } catch (err) {
       console.error("Erreur suppression produit:", err);
     }
   };
 
-  // --- Modal et formulaires ---
   const handleOpenModal = (product = null) => {
     setIsModalOpen(true);
     setCurrentProduct(product);
-    if (product) {
+    if (product)
       setFormData({
         ...product,
-        stock: product.stock ? true : false, // convert 1/0 en booléen
+        stock: product.stock ? true : false,
       });
-    }
   };
 
   const handleCloseModal = () => setIsModalOpen(false);
@@ -152,42 +153,12 @@ const BackOffice = () => {
     }));
   };
 
-  const handleAdditionsChange = (e, index, field) => {
-    const newAdditions = [...formData.additions];
-    newAdditions[index][field] = e.target.value;
-    setFormData((prev) => ({ ...prev, additions: newAdditions }));
-  };
-
-  const handleAddAddition = () => {
-    setFormData((prev) => ({
-      ...prev,
-      additions: [...prev.additions, { name: "", price: "" }],
-    }));
-  };
-
-  const handleRemoveAddition = (index) => {
-    const newAdditions = formData.additions.filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, additions: newAdditions }));
-  };
-
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setFormData((prev) => ({ ...prev, image: imageUrl }));
     }
-  };
-
-  const handleOrderStatusChange = (orderId, newStatus) => {
-    setCommandes(
-      commandes.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
-  };
-
-  const handleUserRoleChange = (userId, newRole) => {
-    setUtilisateurs(
-      utilisateurs.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
   };
 
   const renderContent = () => {
@@ -268,11 +239,14 @@ const BackOffice = () => {
                         <select
                           value={o.status}
                           onChange={(e) =>
-                            handleOrderStatusChange(o.id, e.target.value)
+                            setCommandes(
+                              commandes.map((c) =>
+                                c.id === o.id
+                                  ? { ...c, status: e.target.value }
+                                  : c
+                              )
+                            )
                           }
-                          className={`status-select status-${o.status
-                            .toLowerCase()
-                            .replace(" ", "-")}`}
                         >
                           <option value="En cours">En cours</option>
                           <option value="Terminée">Terminée</option>
@@ -313,7 +287,13 @@ const BackOffice = () => {
                         <select
                           value={u.role}
                           onChange={(e) =>
-                            handleUserRoleChange(u.id, e.target.value)
+                            setUtilisateurs(
+                              utilisateurs.map((user) =>
+                                user.id === u.id
+                                  ? { ...user, role: e.target.value }
+                                  : user
+                              )
+                            )
                           }
                         >
                           <option value="Administrateur">Administrateur</option>
@@ -342,24 +322,26 @@ const BackOffice = () => {
               className={activeTab === "produits" ? "active" : ""}
               onClick={() => setActiveTab("produits")}
             >
-              <span>Produits</span>
+              Produits
             </li>
             <li
               className={activeTab === "commandes" ? "active" : ""}
               onClick={() => setActiveTab("commandes")}
             >
-              <span>Commandes</span>
+              Commandes
             </li>
             <li
               className={activeTab === "utilisateurs" ? "active" : ""}
               onClick={() => setActiveTab("utilisateurs")}
             >
-              <span>Utilisateurs</span>
+              Utilisateurs
             </li>
           </ul>
         </nav>
       </aside>
+
       <main className="dashboard-main">{renderContent()}</main>
+
       {isModalOpen && (
         <div className="dashboard-modal-overlay">
           <div className="dashboard-modal">
@@ -375,7 +357,6 @@ const BackOffice = () => {
               </button>
             </div>
             <div className="dashboard-modal-content">
-              {/* Formulaire de produit ici, inchangé sauf stock checkbox */}
               <form onSubmit={handleSubmit}>
                 <div className="dashboard-form-group">
                   <label>Nom du produit</label>
@@ -411,7 +392,6 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-                {/* Stock en checkbox */}
                 <div className="dashboard-form-group dashboard-checkbox-group">
                   <input
                     type="checkbox"
@@ -420,6 +400,64 @@ const BackOffice = () => {
                     onChange={handleChange}
                   />
                   <label>En stock</label>
+                </div>
+                <div className="dashboard-form-group">
+                  <label>Prix (€)</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    step="0.01"
+                    required
+                  />
+                </div>
+                <div className="dashboard-form-group">
+                  <label>Image</label>
+                  <div className="dashboard-image-input-group">
+                    <input
+                      type="text"
+                      name="image"
+                      placeholder="Coller l'URL de l'image"
+                      value={formData.image}
+                      onChange={handleChange}
+                    />
+                    <span className="or-divider">OU</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                  </div>
+                </div>
+                <div className="dashboard-form-group">
+                  <label>Piquant (0-5)</label>
+                  <input
+                    type="number"
+                    name="spiciness"
+                    value={formData.spiciness}
+                    onChange={handleChange}
+                    min="0"
+                    max="5"
+                  />
+                </div>
+                <div className="dashboard-form-group">
+                  <label>Tags (séparés par virgules)</label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags.join(", ")}
+                    onChange={handleArrayChange}
+                  />
+                </div>
+                <div className="dashboard-form-group dashboard-checkbox-group">
+                  <input
+                    type="checkbox"
+                    name="featured"
+                    checked={formData.featured}
+                    onChange={handleChange}
+                  />
+                  <label>Produit en vedette</label>
                 </div>
                 <button type="submit" className="dashboard-form-submit">
                   {currentProduct

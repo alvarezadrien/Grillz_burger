@@ -25,7 +25,8 @@ const Navbar = () => {
   }, [isBurgerOpen]);
 
   const menuItems = [
-    { label: "BURGERS", path: "/" },
+    { label: "ACCUEIL", path: "/" },
+    { label: "BURGERS", path: "/burger" },
     { label: "SPÉCIAUX", path: "/speciaux" },
     { label: "JUMBOS", path: "/jumbos" },
     { label: "ENTRÉES", path: "/entrees" },

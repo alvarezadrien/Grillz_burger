@@ -89,20 +89,17 @@ const Dessert = () => {
     <>
       {/* ====== HERO ====== */}
       <header className="hero-wrap" id="dessert-hero">
-        <div className="hero-bg" aria-hidden="true"></div>
+        <div
+          className="hero-bg"
+          aria-hidden="true"
+          style={{ backgroundImage: `url(${heroDessert})` }}
+        ></div>
         <div className="hero-overlay" aria-hidden="true"></div>
 
         <main className="main-content">
           <h1 className="titre_page">Nos Desserts</h1>
 
           <section className="hero-section">
-            <div className="hero-img-container">
-              <img
-                src={heroDessert}
-                alt="Desserts gourmands"
-                className="hero-image"
-              />
-            </div>
             <p className="hero-text reveal">
               Découvrez nos douceurs sucrées, parfaites pour terminer votre
               repas !

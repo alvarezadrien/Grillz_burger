@@ -1,9 +1,9 @@
 import express from "express";
-import Burger from "../models/Burger.js";
+import Burger from "../models/Burger.js"; // chemin correct selon l’arborescence
 
 const router = express.Router();
 
-// ➡️ GET tous les burgers
+// GET tous les burgers
 router.get("/", async (req, res) => {
     try {
         const burgers = await Burger.find();
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ➡️ GET un burger par ID
+// GET burger par ID
 router.get("/:id", async (req, res) => {
     try {
         const burger = await Burger.findById(req.params.id);
@@ -24,27 +24,14 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// ➡️ POST ajouter un burger
+// POST ajouter un burger
 router.post("/", async (req, res) => {
     try {
-        const { name, description, ingredients, allergens, additions, price, img, spiciness, tags, bestSeller } = req.body;
+        const { name, description, ingredients, allergens, additions, included, price, image, spiciness, tags, featured } = req.body;
 
-        if (!name || !price) {
-            return res.status(400).json({ error: "Le nom et le prix sont requis" });
-        }
+        if (!name || !price) return res.status(400).json({ error: "Le nom et le prix sont requis" });
 
-        const newBurger = new Burger({
-            name,
-            description,
-            ingredients,
-            allergens,
-            additions,
-            price,
-            img,
-            spiciness,
-            tags,
-            bestSeller,
-        });
+        const newBurger = new Burger({ name, description, ingredients, allergens, additions, included, price, image, spiciness, tags, featured });
 
         await newBurger.save();
         res.status(201).json(newBurger);
@@ -53,14 +40,10 @@ router.post("/", async (req, res) => {
     }
 });
 
-// ➡️ PUT modifier un burger
+// PUT modifier un burger
 router.put("/:id", async (req, res) => {
     try {
-        const updatedBurger = await Burger.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true } // renvoie le document mis à jour
-        );
+        const updatedBurger = await Burger.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedBurger) return res.status(404).json({ error: "Burger non trouvé" });
         res.status(200).json(updatedBurger);
     } catch (err) {
@@ -68,7 +51,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// ➡️ DELETE supprimer un burger
+// DELETE supprimer un burger
 router.delete("/:id", async (req, res) => {
     try {
         const deletedBurger = await Burger.findByIdAndDelete(req.params.id);

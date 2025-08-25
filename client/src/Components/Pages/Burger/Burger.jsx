@@ -8,6 +8,7 @@ const Burger = () => {
   const [burgers, setBurgers] = useState([]);
   const [quantityMap, setQuantityMap] = useState({});
 
+  // 🔹 Récupérer les burgers depuis l'API
   useEffect(() => {
     fetch("https://grillzburger.onrender.com/api/burgers")
       .then((res) => res.json())
@@ -29,13 +30,10 @@ const Burger = () => {
     });
   };
 
-  const calculatePrice = (burger) => {
-    return (burger.price * quantityMap[burger._id]).toFixed(2);
-  };
+  const calculatePrice = (burger) =>
+    (burger.price * quantityMap[burger._id]).toFixed(2);
 
-  const handleView = (burger) => {
-    navigate(`/produit_burger/${burger._id}`);
-  };
+  const handleView = (burger) => navigate(`/produit_burger/${burger._id}`);
 
   const handleAddToCart = (burger) => {
     const order = {
@@ -81,7 +79,7 @@ const Burger = () => {
             >
               <img
                 className="burger-product-img"
-                src={burger.imagec || undefined}
+                src={burger.image}
                 alt={burger.name}
               />
               <div className="burger-product-header">

@@ -23,14 +23,14 @@ const burgerSchema = new mongoose.Schema(
         additions: {
             type: [
                 {
-                    name: String,       // Nom de l'ajout, ex: "Bacon", "Fromage supplément"
-                    price: Number,      // Prix additionnel
+                    name: String,
+                    price: Number,
                 },
             ],
             default: [],
         },
         included: {
-            type: [String],        // Ce qui est compris dans le burger, ex: "Pain", "Sauce"
+            type: [String],
             default: [],
         },
         price: {
@@ -38,30 +38,22 @@ const burgerSchema = new mongoose.Schema(
             required: true,
         },
         image: {
-            type: String,          // URL de l'image
+            type: String,
             default: "",
         },
         spiciness: {
-            type: Number,          // Piquant de 0 à 5
+            type: Number,
             min: 0,
             max: 5,
             default: 0,
         },
         tags: {
-            type: [String],        // Ex: ["best seller", "vegan", "nouveau"]
+            type: [String],
             default: [],
         },
         featured: {
-            type: Boolean,         // Pour mise en avant sur la page d'accueil
+            type: Boolean,
             default: false,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
-        },
-        updatedAt: {
-            type: Date,
-            default: Date.now,
         },
     },
     { timestamps: true }

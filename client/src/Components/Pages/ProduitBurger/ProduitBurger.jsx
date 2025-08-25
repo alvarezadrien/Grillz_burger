@@ -9,20 +9,22 @@ const ProduitBurger = () => {
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState({});
 
-  // 🔹 Récupération du burger depuis l'API
+  // 🔹 Récupération du burger via l'API
   useEffect(() => {
     fetch(`https://grillzburger.onrender.com/api/burgers/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Burger non trouvé");
+        return res.json();
+      })
       .then((data) => {
-        if (!data) return navigate("/burgers");
         setBurger(data);
 
-        // Initialiser les extras disponibles
+        // Initialiser extras disponibles
         const initialExtras = {};
         data.additions?.forEach((extra) => (initialExtras[extra.name] = false));
         setExtras(initialExtras);
       })
-      .catch(() => navigate("/burgers"));
+      .catch(() => navigate("/burger")); // si erreur, retourne à la liste des burgers
   }, [id, navigate]);
 
   const handleExtraChange = (name) => {
@@ -44,7 +46,18 @@ const ProduitBurger = () => {
     return ((burger.price + extrasPrice) * quantity).toFixed(2);
   };
 
-  if (!burger) return <p>Chargement du burger...</p>;
+  const handleAddToCart = () => {
+    const order = {
+      product: burger.name,
+      quantity,
+      extras: Object.keys(extras).filter((key) => extras[key]),
+      totalPrice: calculatePrice(),
+    };
+    console.log("Produit ajouté au panier :", order);
+    alert(`${burger.name} ajouté au panier !`);
+  };
+
+  if (!burger) return <p>Chargement...</p>;
 
   return (
     <div className="produit-container">
@@ -54,53 +67,40 @@ const ProduitBurger = () => {
         </div>
 
         {burger.additions?.length > 0 && (
-          <div className="extras-carousel-container">
-            {burger.additions.map((extra) => (
-              <div
-                key={extra._id}
-                className={`extra-item ${extras[extra.name] ? "active" : ""}`}
-                onClick={() => handleExtraChange(extra.name)}
-              >
-                <div className="extra-info">
+          <div className="extras-container">
+            <h3>Extras disponibles</h3>
+            <div className="extras-list">
+              {burger.additions.map((extra) => (
+                <div
+                  key={extra.name}
+                  className={`extra-item ${extras[extra.name] ? "active" : ""}`}
+                  onClick={() => handleExtraChange(extra.name)}
+                >
                   <span>{extra.name}</span>
-                  <small>+${extra.price.toFixed(2)}</small>
+                  <span>+${extra.price.toFixed(2)}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
 
       <div className="produit-details">
-        <h1 className="produit-title">{burger.name}</h1>
-        <p className="produit-desc">{burger.description}</p>
-
-        <div className="produit-price">
-          <span>${burger.price.toFixed(2)}</span>
-        </div>
+        <h1>{burger.name}</h1>
+        <p>{burger.description}</p>
 
         <div className="quantity">
           <label>Quantité :</label>
-          <div className="quantity-controls">
-            <button onClick={() => handleQuantityChange("minus")}>-</button>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-            />
-            <button onClick={() => handleQuantityChange("plus")}>+</button>
-          </div>
+          <button onClick={() => handleQuantityChange("minus")}>-</button>
+          <input type="number" value={quantity} readOnly />
+          <button onClick={() => handleQuantityChange("plus")}>+</button>
         </div>
 
         <div className="total">
           <h2>Total : ${calculatePrice()}</h2>
         </div>
 
-        <button
-          className="btn-add"
-          onClick={() => alert(`${burger.name} ajouté au panier !`)}
-        >
+        <button className="btn-add" onClick={handleAddToCart}>
           Ajouter au panier
         </button>
       </div>

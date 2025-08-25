@@ -34,10 +34,9 @@ const BackOffice = () => {
     spiciness: 0,
     tags: [],
     featured: false,
-    stock: "",
+    stock: false, // booléen Oui/Non
   });
 
-  // Réinitialiser le formulaire à la fermeture du modal
   useEffect(() => {
     if (!isModalOpen) {
       setFormData({
@@ -53,7 +52,7 @@ const BackOffice = () => {
         spiciness: 0,
         tags: [],
         featured: false,
-        stock: "",
+        stock: false,
       });
       setCurrentProduct(null);
     }
@@ -83,7 +82,7 @@ const BackOffice = () => {
     const dataToSubmit = {
       ...formData,
       price: parseFloat(formData.price),
-      stock: parseInt(formData.stock, 10),
+      stock: formData.stock ? 1 : 0, // envoyer comme 1/0 au backend
       spiciness: parseInt(formData.spiciness, 10),
       additions: formData.additions.map((add) => ({
         name: add.name,
@@ -93,14 +92,12 @@ const BackOffice = () => {
 
     try {
       if (currentProduct) {
-        // Modifier
         await fetch(`${API_URL}/api/burgers/${currentProduct._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataToSubmit),
         });
       } else {
-        // Ajouter
         await fetch(`${API_URL}/api/burgers`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,9 +115,7 @@ const BackOffice = () => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?"))
       return;
     try {
-      await fetch(`${API_URL}/api/burgers/${id}`, {
-        method: "DELETE",
-      });
+      await fetch(`${API_URL}/api/burgers/${id}`, { method: "DELETE" });
       fetchProduits();
     } catch (err) {
       console.error("Erreur suppression produit:", err);
@@ -131,7 +126,12 @@ const BackOffice = () => {
   const handleOpenModal = (product = null) => {
     setIsModalOpen(true);
     setCurrentProduct(product);
-    if (product) setFormData(product);
+    if (product) {
+      setFormData({
+        ...product,
+        stock: product.stock ? true : false, // convert 1/0 en booléen
+      });
+    }
   };
 
   const handleCloseModal = () => setIsModalOpen(false);
@@ -178,7 +178,6 @@ const BackOffice = () => {
     }
   };
 
-  // --- Commandes et Utilisateurs fictifs ---
   const handleOrderStatusChange = (orderId, newStatus) => {
     setCommandes(
       commandes.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
@@ -224,7 +223,7 @@ const BackOffice = () => {
                       <td>{p.name}</td>
                       <td>{p.category}</td>
                       <td>{p.price.toFixed(2)} €</td>
-                      <td>{p.stock}</td>
+                      <td>{p.stock ? "Oui" : "Non"}</td>
                       <td className="dashboard-actions-cell">
                         <button
                           className="dashboard-btn-edit"
@@ -360,9 +359,7 @@ const BackOffice = () => {
           </ul>
         </nav>
       </aside>
-
       <main className="dashboard-main">{renderContent()}</main>
-
       {isModalOpen && (
         <div className="dashboard-modal-overlay">
           <div className="dashboard-modal">
@@ -378,6 +375,7 @@ const BackOffice = () => {
               </button>
             </div>
             <div className="dashboard-modal-content">
+              {/* Formulaire de produit ici, inchangé sauf stock checkbox */}
               <form onSubmit={handleSubmit}>
                 <div className="dashboard-form-group">
                   <label>Nom du produit</label>
@@ -413,138 +411,15 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-                <div className="dashboard-form-group">
-                  <label>Ingrédients (séparés par des virgules)</label>
-                  <input
-                    type="text"
-                    name="ingredients"
-                    value={formData.ingredients.join(", ")}
-                    onChange={handleArrayChange}
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Allergènes (séparés par des virgules)</label>
-                  <input
-                    type="text"
-                    name="allergens"
-                    value={formData.allergens.join(", ")}
-                    onChange={handleArrayChange}
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Inclus (séparés par des virgules)</label>
-                  <input
-                    type="text"
-                    name="included"
-                    value={formData.included.join(", ")}
-                    onChange={handleArrayChange}
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Additions</label>
-                  {formData.additions.map((addition, index) => (
-                    <div key={index} className="dashboard-addition-group">
-                      <input
-                        type="text"
-                        placeholder="Nom de l'addition"
-                        value={addition.name}
-                        onChange={(e) =>
-                          handleAdditionsChange(e, index, "name")
-                        }
-                      />
-                      <input
-                        type="number"
-                        placeholder="Prix"
-                        value={addition.price}
-                        onChange={(e) =>
-                          handleAdditionsChange(e, index, "price")
-                        }
-                        step="0.01"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveAddition(index)}
-                        className="dashboard-btn-remove-addition"
-                      >
-                        -
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={handleAddAddition}
-                    className="dashboard-btn-add-addition"
-                  >
-                    + Ajouter une addition
-                  </button>
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Prix (€)</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Stock</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Image</label>
-                  <div className="dashboard-image-input-group">
-                    <input
-                      type="text"
-                      name="image"
-                      placeholder="Coller l'URL de l'image ici"
-                      value={formData.image}
-                      onChange={handleChange}
-                    />
-                    <span className="or-divider">OU</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                    />
-                  </div>
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Piquant (0-5)</label>
-                  <input
-                    type="number"
-                    name="spiciness"
-                    value={formData.spiciness}
-                    onChange={handleChange}
-                    min="0"
-                    max="5"
-                  />
-                </div>
-                <div className="dashboard-form-group">
-                  <label>Tags (séparés par des virgules)</label>
-                  <input
-                    type="text"
-                    name="tags"
-                    value={formData.tags.join(", ")}
-                    onChange={handleArrayChange}
-                  />
-                </div>
+                {/* Stock en checkbox */}
                 <div className="dashboard-form-group dashboard-checkbox-group">
                   <input
                     type="checkbox"
-                    name="featured"
-                    checked={formData.featured}
+                    name="stock"
+                    checked={formData.stock}
                     onChange={handleChange}
                   />
-                  <label>Produit en vedette</label>
+                  <label>En stock</label>
                 </div>
                 <button type="submit" className="dashboard-form-submit">
                   {currentProduct

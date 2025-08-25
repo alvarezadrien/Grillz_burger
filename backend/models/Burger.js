@@ -43,8 +43,8 @@ const burgerSchema = new mongoose.Schema(
             required: true,
         },
         stock: {
-            type: Number,
-            default: 0,
+            type: Boolean,
+            default: true
         },
         image: {
             type: String,

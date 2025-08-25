@@ -250,3 +250,21 @@
 .burger-btn-view:hover {
   background: var(--lime-glow);
 }
+
+/* 🔹 Style quand un burger est en rupture */
+.burger-outofstock {
+  opacity: 0.5;
+  pointer-events: none; /* empêche toute interaction */
+}
+
+.burger-stock-info {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.burger-product-buttons button:disabled {
+  background: grey !important;
+  cursor: not-allowed;
+}

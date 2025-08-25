@@ -39,6 +39,7 @@ const Burger = () => {
   const handleView = (burger) => navigate(`/produit_burger/${burger._id}`);
 
   const handleAddToCart = (burger) => {
+    if (burger.stock <= 0) return; // 🔒 Sécurité côté front
     const order = {
       id: burger._id,
       product: burger.name,
@@ -78,55 +79,75 @@ const Burger = () => {
         </p>
 
         <div className="burger-products-grid">
-          {burgers.map((burger) => (
-            <article
-              className="burger-product-card burger-reveal"
-              key={burger._id}
-            >
-              <img
-                className="burger-product-img"
-                src={burger.image}
-                alt={burger.name}
-              />
-              <div className="burger-product-header">
-                <h3 className="burger-product-title">{burger.name}</h3>
-              </div>
-              <p className="burger-product-desc">{burger.description}</p>
+          {burgers.map((burger) => {
+            const outOfStock = burger.stock <= 0;
 
-              <div className="burger-quantity">
-                <button
-                  onClick={() => handleQuantityChange(burger._id, "minus")}
-                >
-                  -
-                </button>
-                <input type="number" value={quantityMap[burger._id]} readOnly />
-                <button
-                  onClick={() => handleQuantityChange(burger._id, "plus")}
-                >
-                  +
-                </button>
-              </div>
+            return (
+              <article
+                className={`burger-product-card burger-reveal ${
+                  outOfStock ? "burger-outofstock" : ""
+                }`}
+                key={burger._id}
+              >
+                <img
+                  className="burger-product-img"
+                  src={burger.image}
+                  alt={burger.name}
+                />
+                <div className="burger-product-header">
+                  <h3 className="burger-product-title">{burger.name}</h3>
+                </div>
+                <p className="burger-product-desc">{burger.description}</p>
 
-              <p className="burger-product-price">
-                <span>${calculatePrice(burger)}</span>
-              </p>
+                {outOfStock ? (
+                  <p className="burger-stock-info">❌ Rupture de stock</p>
+                ) : (
+                  <>
+                    <div className="burger-quantity">
+                      <button
+                        onClick={() =>
+                          handleQuantityChange(burger._id, "minus")
+                        }
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        value={quantityMap[burger._id]}
+                        readOnly
+                      />
+                      <button
+                        onClick={() => handleQuantityChange(burger._id, "plus")}
+                      >
+                        +
+                      </button>
+                    </div>
 
-              <div className="burger-product-buttons">
-                <button
-                  className="burger-btn-add"
-                  onClick={() => handleAddToCart(burger)}
-                >
-                  Ajouter au panier
-                </button>
-                <button
-                  className="burger-btn-view"
-                  onClick={() => handleView(burger)}
-                >
-                  Voir
-                </button>
-              </div>
-            </article>
-          ))}
+                    <p className="burger-product-price">
+                      <span>{calculatePrice(burger)} €</span>
+                    </p>
+                  </>
+                )}
+
+                <div className="burger-product-buttons">
+                  <button
+                    className="burger-btn-add"
+                    onClick={() => handleAddToCart(burger)}
+                    disabled={outOfStock}
+                  >
+                    Ajouter au panier
+                  </button>
+                  <button
+                    className="burger-btn-view"
+                    onClick={() => handleView(burger)}
+                    disabled={outOfStock}
+                  >
+                    Voir
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </>

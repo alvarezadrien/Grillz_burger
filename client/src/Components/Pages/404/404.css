@@ -1,0 +1,151 @@
+/* General styling for the 404 page */
+.not-found-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  overflow: hidden;
+}
+
+.not-found-container {
+  max-width: 800px;
+  padding: 2rem;
+  border-radius: 20px;
+  background: rgba(30, 30, 30, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.not-found-content {
+  position: relative;
+  z-index: 2;
+}
+
+.not-found-title {
+  font-size: clamp(4rem, 15vw, 10rem);
+  font-weight: 900;
+  letter-spacing: 5px;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: bounce-in 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.not-found-subtitle {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #fff;
+  margin-top: -2rem;
+  animation: fade-in 1.5s ease-in-out;
+}
+
+.not-found-text {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: #a3a3a3;
+  margin: 1.5rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fade-in 1.5s ease-in-out;
+}
+
+.not-found-button {
+  display: inline-block;
+  background-color: #ffc107;
+  color: #121212;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  margin-top: 1rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+}
+
+.not-found-button:hover {
+  transform: translateY(-5px) scale(1.05);
+  background-color: #ff9800;
+}
+
+/* Burger Image Animations */
+.not-found-image {
+  position: absolute;
+  opacity: 0;
+  animation: float-in 1.5s ease-in-out forwards;
+}
+
+.empty-burger {
+  width: clamp(200px, 40vw, 400px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  animation-delay: 0.8s;
+  animation-name: float-in, spin-slow;
+}
+
+.happy-burger {
+  width: clamp(100px, 20vw, 150px);
+  bottom: 10%;
+  right: 15%;
+  transform: rotate(15deg);
+  animation-delay: 1.2s;
+  animation-name: float-in, shake-little;
+}
+
+/* Keyframes for animations */
+@keyframes bounce-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake-little {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}

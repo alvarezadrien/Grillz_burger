@@ -49,7 +49,13 @@ export const CartProvider = ({ children }) => {
 
   // Calculer le total
   const calculateTotal = () =>
-    cart.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
+    cart
+      .reduce((acc, item) => {
+        // Total = prix * quantité
+        const price = parseFloat(item.price) || 0;
+        return acc + price * item.quantity;
+      }, 0)
+      .toFixed(2);
 
   return (
     <CartContext.Provider

@@ -16,6 +16,10 @@ const Panier = () => {
     navigate("/");
   };
 
+  const handleContinue = () => {
+    navigate("/");
+  };
+
   return (
     <div className="panier-page">
       <header className="panier-header">
@@ -28,8 +32,8 @@ const Panier = () => {
       {cart.length === 0 ? (
         <div className="empty-cart">
           <p>Votre panier est vide... Vite, un petit plaisir ! 😢</p>
-          <button className="btn-primary" onClick={() => navigate("/desserts")}>
-            Découvrir nos créations
+          <button className="btn-primary" onClick={handleContinue}>
+            Continuer mes achats
           </button>
         </div>
       ) : (
@@ -57,7 +61,7 @@ const Panier = () => {
                   </div>
                 </div>
                 <div className="cart-price">
-                  <p>{(item.totalPrice * 1).toFixed(2)} €</p>
+                  <p>{(item.price * item.quantity).toFixed(2)} €</p>
                   <button
                     className="btn-remove"
                     onClick={() => removeFromCart(item.id)}
@@ -81,7 +85,10 @@ const Panier = () => {
             >
               Valider et Payer
             </button>
-            <button className="btn-clear btn-secondary" onClick={clearCart}>
+            <button
+              className="btn-clear btn-secondary"
+              onClick={handleContinue}
+            >
               Recommencer la sélection
             </button>
           </aside>

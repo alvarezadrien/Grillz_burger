@@ -102,7 +102,7 @@ const Home = () => {
         <div className="hero-overlay" aria-hidden="true"></div>
 
         <main className="main-content">
-          <h1 className="titre_page">
+          <h1 className="titre_page header-text">
             Grillz
             <br />
             Burger
@@ -110,11 +110,12 @@ const Home = () => {
 
           <section className="hero-section">
             <p className="hero-text">
-              Certaines saveurs sont agréables,{" "}
-              <strong>d’autres marquent l’histoire</strong>. Si nous sommes
-              connus pour quelque chose, c’est bien pour préparer des burgers
-              pour les vrais amoureux de viande. 100% bœuf, fromage américain,
-              bacon, tomate, salade et notre sauce maison Grillz.
+              <span className="quote-icon">❝</span> Certaines saveurs sont
+              agréables, <strong>d’autres marquent l’histoire</strong>. Si nous
+              sommes connus pour quelque chose, c’est bien pour préparer des
+              burgers pour les vrais amoureux de viande. 100% bœuf, fromage
+              américain, bacon, tomate, salade et notre sauce maison Grillz.
+              <span className="quote-icon right">❞</span>
             </p>
             <div>
               <img

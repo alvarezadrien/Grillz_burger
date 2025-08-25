@@ -1,42 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./BackOffice.css";
 
-// Données fictives
-const PRODUITS_DATA = [
-  {
-    id: 1,
-    name: "Cheeseburger Classique",
-    category: "Burgers",
-    description: "Un classique indémodable.",
-    ingredients: ["Steak de bœuf", "Cheddar", "Pain brioché"],
-    allergens: ["Gluten", "Lait"],
-    additions: [{ name: "Bacon", price: 1.5 }],
-    included: ["Sauce spéciale"],
-    price: 9.99,
-    image: "https://via.placeholder.com/150",
-    spiciness: 0,
-    tags: ["meilleur vendeur"],
-    featured: true,
-    stock: 50,
-  },
-  {
-    id: 2,
-    name: "Salade César",
-    category: "Salades",
-    description: "Salade fraîche avec poulet grillé.",
-    ingredients: ["Laitue romaine", "Poulet grillé", "Croûtons"],
-    allergens: ["Gluten", "Lait", "Œufs"],
-    additions: [],
-    included: ["Vinaigrette César"],
-    price: 8.99,
-    image: "https://via.placeholder.com/150",
-    spiciness: 0,
-    tags: ["sain"],
-    featured: false,
-    stock: 35,
-  },
-];
-
+// Données fictives pour commandes et utilisateurs
 const COMMANDES_DATA = [
   { id: 101, customer: "Jean Dupont", status: "En cours", total: 24.98 },
   { id: 102, customer: "Marie Leclerc", status: "Terminée", total: 15.49 },
@@ -50,7 +15,7 @@ const UTILISATEURS_DATA = [
 
 const BackOffice = () => {
   const [activeTab, setActiveTab] = useState("produits");
-  const [produits, setProduits] = useState(PRODUITS_DATA);
+  const [produits, setProduits] = useState([]);
   const [commandes, setCommandes] = useState(COMMANDES_DATA);
   const [utilisateurs, setUtilisateurs] = useState(UTILISATEURS_DATA);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,20 +59,83 @@ const BackOffice = () => {
     }
   }, [isModalOpen]);
 
-  // Ouvrir le modal
-  const handleOpenModal = (product = null) => {
-    setIsModalOpen(true);
-    setCurrentProduct(product);
-    if (product) {
-      setFormData(product);
+  // URL API depuis .env
+  const API_URL =
+    import.meta.env.VITE_API_URL || "https://grillzburger.onrender.com";
+
+  // --- API Produits ---
+  const fetchProduits = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/burgers`);
+      const data = await res.json();
+      setProduits(data);
+    } catch (err) {
+      console.error("Erreur chargement produits:", err);
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  useEffect(() => {
+    fetchProduits();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const dataToSubmit = {
+      ...formData,
+      price: parseFloat(formData.price),
+      stock: parseInt(formData.stock, 10),
+      spiciness: parseInt(formData.spiciness, 10),
+      additions: formData.additions.map((add) => ({
+        name: add.name,
+        price: parseFloat(add.price),
+      })),
+    };
+
+    try {
+      if (currentProduct) {
+        // Modifier
+        await fetch(`${API_URL}/api/burgers/${currentProduct._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSubmit),
+        });
+      } else {
+        // Ajouter
+        await fetch(`${API_URL}/api/burgers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSubmit),
+        });
+      }
+      fetchProduits();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Erreur ajout/modif produit:", err);
+    }
   };
 
-  // Gestion basique des inputs
+  const handleDelete = async (id) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?"))
+      return;
+    try {
+      await fetch(`${API_URL}/api/burgers/${id}`, {
+        method: "DELETE",
+      });
+      fetchProduits();
+    } catch (err) {
+      console.error("Erreur suppression produit:", err);
+    }
+  };
+
+  // --- Modal et formulaires ---
+  const handleOpenModal = (product = null) => {
+    setIsModalOpen(true);
+    setCurrentProduct(product);
+    if (product) setFormData(product);
+  };
+
+  const handleCloseModal = () => setIsModalOpen(false);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -116,16 +144,14 @@ const BackOffice = () => {
     }));
   };
 
-  // Gestion des champs multiples séparés par des virgules
   const handleArrayChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value.split(",").map((item) => item.trim()),
+      [name]: value.split(",").map((i) => i.trim()),
     }));
   };
 
-  // Gestion dynamique des additions
   const handleAdditionsChange = (e, index, field) => {
     const newAdditions = [...formData.additions];
     newAdditions[index][field] = e.target.value;
@@ -144,7 +170,6 @@ const BackOffice = () => {
     setFormData((prev) => ({ ...prev, additions: newAdditions }));
   };
 
-  // Gestion des images
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -153,44 +178,7 @@ const BackOffice = () => {
     }
   };
 
-  // Soumission du formulaire
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const dataToSubmit = {
-      ...formData,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock, 10),
-      spiciness: parseInt(formData.spiciness, 10),
-      additions: formData.additions.map((add) => ({
-        name: add.name,
-        price: parseFloat(add.price),
-      })),
-    };
-
-    if (currentProduct) {
-      // Modification
-      setProduits(
-        produits.map((p) =>
-          p.id === currentProduct.id
-            ? { ...dataToSubmit, id: currentProduct.id }
-            : p
-        )
-      );
-    } else {
-      // Nouveau produit
-      const newProduct = { ...dataToSubmit, id: Date.now() };
-      setProduits([...produits, newProduct]);
-    }
-    handleCloseModal();
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) {
-      setProduits(produits.filter((p) => p.id !== id));
-    }
-  };
-
-  // Gestion des commandes et utilisateurs
+  // --- Commandes et Utilisateurs fictifs ---
   const handleOrderStatusChange = (orderId, newStatus) => {
     setCommandes(
       commandes.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
@@ -203,7 +191,6 @@ const BackOffice = () => {
     );
   };
 
-  // Affichage dynamique selon l'onglet
   const renderContent = () => {
     switch (activeTab) {
       case "produits":
@@ -232,8 +219,8 @@ const BackOffice = () => {
                 </thead>
                 <tbody>
                   {produits.map((p) => (
-                    <tr key={p.id}>
-                      <td>{p.id}</td>
+                    <tr key={p._id}>
+                      <td>{p._id}</td>
                       <td>{p.name}</td>
                       <td>{p.category}</td>
                       <td>{p.price.toFixed(2)} €</td>
@@ -247,7 +234,7 @@ const BackOffice = () => {
                         </button>
                         <button
                           className="dashboard-btn-delete"
-                          onClick={() => handleDelete(p.id)}
+                          onClick={() => handleDelete(p._id)}
                         >
                           Supprimer
                         </button>
@@ -348,7 +335,6 @@ const BackOffice = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <h1 className="dashboard-logo">Panneau Admin</h1>
         <nav className="dashboard-nav">
@@ -375,10 +361,8 @@ const BackOffice = () => {
         </nav>
       </aside>
 
-      {/* Contenu principal */}
       <main className="dashboard-main">{renderContent()}</main>
 
-      {/* Modal produit */}
       {isModalOpen && (
         <div className="dashboard-modal-overlay">
           <div className="dashboard-modal">
@@ -405,7 +389,6 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Catégorie</label>
                   <select
@@ -421,7 +404,6 @@ const BackOffice = () => {
                     <option value="Desserts">Desserts</option>
                   </select>
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Description</label>
                   <textarea
@@ -431,7 +413,6 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Ingrédients (séparés par des virgules)</label>
                   <input
@@ -441,7 +422,6 @@ const BackOffice = () => {
                     onChange={handleArrayChange}
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Allergènes (séparés par des virgules)</label>
                   <input
@@ -451,7 +431,6 @@ const BackOffice = () => {
                     onChange={handleArrayChange}
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Inclus (séparés par des virgules)</label>
                   <input
@@ -461,7 +440,6 @@ const BackOffice = () => {
                     onChange={handleArrayChange}
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Additions</label>
                   {formData.additions.map((addition, index) => (
@@ -500,7 +478,6 @@ const BackOffice = () => {
                     + Ajouter une addition
                   </button>
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Prix (€)</label>
                   <input
@@ -512,7 +489,6 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Stock</label>
                   <input
@@ -523,7 +499,6 @@ const BackOffice = () => {
                     required
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Image</label>
                   <div className="dashboard-image-input-group">
@@ -542,7 +517,6 @@ const BackOffice = () => {
                     />
                   </div>
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Piquant (0-5)</label>
                   <input
@@ -554,7 +528,6 @@ const BackOffice = () => {
                     max="5"
                   />
                 </div>
-
                 <div className="dashboard-form-group">
                   <label>Tags (séparés par des virgules)</label>
                   <input
@@ -564,7 +537,6 @@ const BackOffice = () => {
                     onChange={handleArrayChange}
                   />
                 </div>
-
                 <div className="dashboard-form-group dashboard-checkbox-group">
                   <input
                     type="checkbox"
@@ -574,7 +546,6 @@ const BackOffice = () => {
                   />
                   <label>Produit en vedette</label>
                 </div>
-
                 <button type="submit" className="dashboard-form-submit">
                   {currentProduct
                     ? "Enregistrer les modifications"

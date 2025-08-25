@@ -35,18 +35,42 @@
   min-height: 100vh;
 }
 
+/* ====== HEADER TEXT ====== */
 .header-text {
-  font-size: clamp(40px, 9.2vw, 140px);
+  font-size: clamp(50px, 9vw, 160px);
   font-weight: 900;
-  line-height: 0.95;
+  line-height: 1.05;
   text-transform: uppercase;
-  letter-spacing: -2.5px;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  letter-spacing: -1px;
+  text-shadow: -2px -2px 0 #8dc027, 2px -2px 0 #fff, -2px 2px 0 #fff,
+    2px 2px 0 #fff, 4px 4px 0 #d9d9d9, 6px 6px 0 #c0c0c0, 8px 8px 0 #a8a8a8,
+    10px 10px 40px rgba(0, 0, 0, 0.55);
   opacity: 0;
   transform: translateY(20px) scale(0.98);
-  animation: pop-in 0.9s 0.15s both cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: pop-in 1s 0.15s both cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-bottom: 1rem;
+
+  /* Animation gradient sur le texte */
+  background: linear-gradient(270deg, #9acd32, #ffffff, #9acd32);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 400% 400%;
+  animation: gradient-slide 6s ease infinite, pop-in 1s 0.15s both;
 }
 
+@keyframes gradient-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Animation pop-in pour header */
 @keyframes pop-in {
   to {
     opacity: 1;
@@ -54,6 +78,7 @@
   }
 }
 
+/* ====== HERO SECTION ====== */
 .hero-section {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -76,9 +101,36 @@
   opacity: 0;
   transform: translateY(18px);
   animation: fade-up 0.9s 0.35s both cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+
 .hero-text strong {
   color: var(--lime-green);
+}
+
+.quote-icon {
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--lime-green);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  opacity: 0.8;
+}
+
+.quote-icon.right {
+  top: auto;
+  left: auto;
+  bottom: 10px;
+  right: 10px;
+  opacity: 0.5;
 }
 
 @keyframes fade-up {
@@ -103,10 +155,11 @@
 }
 .hero-image:hover {
   transform: perspective(900px) rotateX(0) rotateY(0) translateY(-4px)
-    scale(1.02);
-  box-shadow: 0 45px 90px rgba(154, 205, 50, 0.2),
+    scale(1.05);
+  box-shadow: 0 50px 100px rgba(154, 205, 50, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.08) inset;
 }
+
 @keyframes card-in {
   0% {
     opacity: 0;
@@ -123,7 +176,6 @@
   margin-top: 2rem;
   font-weight: 800;
   letter-spacing: 3px;
-  color: #f7f7f7;
   text-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
 }
 
@@ -176,9 +228,10 @@ section {
   transform-style: preserve-3d;
 }
 .product-card:hover {
-  transform: translateY(-8px) rotateX(2deg);
-  border-color: rgba(154, 205, 50, 0.5);
-  box-shadow: 0 30px 70px rgba(154, 205, 50, 0.18);
+  transform: translateY(-10px) rotateX(3deg);
+  border-color: rgba(154, 205, 50, 0.6);
+  box-shadow: 0 35px 75px rgba(154, 205, 50, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
 }
 .product-img {
   width: 100%;
@@ -228,7 +281,7 @@ section {
 }
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(154, 205, 50, 0.28);
+  box-shadow: 0 12px 28px rgba(154, 205, 50, 0.32);
   background: var(--lime-glow);
 }
 
@@ -282,6 +335,11 @@ section {
       transparent 60%
     ),
     linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  transition: box-shadow 0.4s ease, border 0.4s ease;
+}
+.promo:hover {
+  box-shadow: 0 0 50px rgba(154, 205, 50, 0.25);
+  border-color: rgba(154, 205, 50, 0.18);
 }
 .promo-anim {
   position: absolute;
